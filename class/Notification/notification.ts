@@ -32,8 +32,8 @@ class NotificationSession{
 
     //ENVIA OS DADOS NA NOTIFICAÇÃO PARA O DESTINO
     public send():void{
-
-        this.destiny.ws.send({status:this.status,message:{type:this.note.type,title:this.note.title,message:this.note.message,sender:this.sender.login}})
+        
+        this.destiny.ws.send(JSON.stringify({status:this.status,body:this.note.toJSON(),sender:this.sender}));
         
     }
 

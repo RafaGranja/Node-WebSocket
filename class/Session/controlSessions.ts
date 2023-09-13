@@ -3,6 +3,7 @@ import { STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
 import { DelpSession } from "./session";
+import {logger} from "../../src/log";
 
 
 export class DelpSessions { 
@@ -31,23 +32,23 @@ export class DelpSessions {
     public onClose(cli : Client,ws:any){
     
         this.sessions.get(cli.key)?.clients.delete(cli)
-        console.log(`onClose: ${cli.ws}`);
+        logger.info(`onClose: ${cli.ws}`);
 
     }
 
     //MÉTODO QUE É CHAMADO AO OCORRER UM ERRO NO WS-CLIENT
     public onError(cli:Client,err:any){
 
-        console.error(`onError:${cli.ws}, message:${err.message}`);
-        const note = new NotificationSession(cli,new Note(STATUS.ERROR,TYPE.ERROR,err,`Erro do cliente ${cli.login} `))
+        logger.error(`onError:${cli.ws}, message:${err.message}`);
+        const note = new NotificationSession(cli,new Note(STATUS.ERROR,TYPE.ERROR,JSON.stringify({content:err,action:0}),`Erro do cliente ${cli.login} `))
         NotificationService.getInstance().addNotification(note);
     }
 
     //MÉTODO QUE É CHAMADO AO CLIENT ENVIAR UMA MENSAGEM PARA A SESSÃO
     public onMessage(cli:Client,data:any){
 
-        console.log(`onMessage: ${data}`);
-        const note = new NotificationSession(cli,new Note(STATUS.WAIT,TYPE.INFO,"Processando...","Aguarde"))
+        logger.info(`onMessage: ${data}`);
+        const note = new NotificationSession(cli,new Note(STATUS.WAIT,TYPE.INFO,JSON.stringify({content:"Processando...",action:-1}),"Aguarde"))
         NotificationService.getInstance().addNotification(note);
         let jsonObject : any = JSON.parse(data);
         if(jsonObject.type==TYPE.ACTION){
@@ -63,7 +64,7 @@ export class DelpSessions {
         cli.ws.on('error', (error : any) => this.onError(cli, error));
         cli.ws.on('close',(ws : any) => this.onClose(cli,ws));
         this.sessions.get(cli.key)?.clients.add(cli);
-        const note = new NotificationSession(cli,new Note(STATUS.OK,TYPE.INFO,`Conexão estabelecida com a sessão ${cli.key}`,"Sucesso"))
+        const note = new NotificationSession(cli,new Note(STATUS.OK,TYPE.INFO,JSON.stringify({content:`Conexão estabelecida com a sessão ${cli.key}`,action:2}),"Sucesso"))
         NotificationService.getInstance().addNotification(note);
 
     }

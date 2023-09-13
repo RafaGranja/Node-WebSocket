@@ -1,6 +1,9 @@
 import { DelpSession } from "../class/Session/session";
-import { Client,Clients_Alone } from "../class/Client/clients";
+import { Client,Clients_Alone, DefaultClient } from "../class/Client/clients";
 import { DelpSessions } from "../class/Session/controlSessions";
+import { logger } from "./log";
+import { Note } from "../class/Notification/notification";
+import { STATUS } from "../class/Consts/consts";
 
 function initSession(key:string,ws : any, login : string, name : string) : Boolean{
 
@@ -36,8 +39,10 @@ function initSession(key:string,ws : any, login : string, name : string) : Boole
 }
 
 
-function NotifySession(key:string,type?:string,title?:string,message?:string){
+function NotifySession(key:string,sender:any=DefaultClient,type?:string,title?:string,message?:string,status?:number){
+
+    DelpSessions.getInstance().getSession(key)?.notifyAll(DefaultClient,new Note(status,type,JSON.stringify({content:message,action:3}),title))
 
 }
 
-export {initSession};
+export {initSession,NotifySession};

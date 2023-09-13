@@ -9,7 +9,7 @@ _app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 _app.use(helmet());
 _app.use(express.json());
 _app.use(morgan('dev'));
-_app.post('/login', (req, res, next) => {
+_app.post('/connect', (req, res, next) => {
     res.json({ token: '123456' });
 });
 module.exports = _app;

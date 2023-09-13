@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r dotenv/config index"
+    "test": "node test/index.js",
+    "start": "npx tsc && node -r dotenv/config build/index"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,8 @@
     "express": "^4.18.2",
     "helmet": "^7.0.0",
     "morgan": "^1.10.0",
+    "winston": "^3.10.0",
+    "winston-daily-rotate-file": "^4.7.1",
     "ws": "^8.13.0"
   },
   "devDependencies": {

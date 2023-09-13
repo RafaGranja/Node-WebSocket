@@ -1,15 +1,17 @@
 import { NotificationSession } from "./notification";
 import { Queue } from "../Queue/queue";
-
+import {logger} from "../../src/log";
 export class NotificationService{
 
     private static instance : NotificationService;
 
     private queue : Queue<NotificationSession>;
 
+    private running : boolean;
+
     private queue_run : any;
 
-    //  RETORNA INSTÂNCIA DO SINGLETON
+    //RETORNA INSTÂNCIA DO SINGLETON
     public static getInstance(){
 
         if (!NotificationService.instance) {
@@ -22,7 +24,7 @@ export class NotificationService{
     constructor(){
 
         this.queue = new Queue<NotificationSession>();
-
+        this.running = false;
     };
 
     //ADICIONA NOTIFICAÇÃO NA FILA
@@ -34,26 +36,35 @@ export class NotificationService{
     //INICIA PROCESSAMENTO DA FILA
     public run(){
 
-        this.queue_run = setInterval(function(){
+        logger.info("Iniciei o serviço de notificação");
 
-            console.log("Iniciei o serviço de notificação")
+        this.running = true;
 
-           var notification : NotificationSession = NotificationService.getInstance().queue.dequeue()            
+        this.queue_run = setInterval(()=>{
 
-           notification.send();
+            if(this.running){
 
-           if(NotificationService.getInstance().queue.isEmpty){
-                NotificationService.getInstance().stop();
-           }
+                let current_note : NotificationSession = this.queue.dequeue()            
 
-        },100)
+                if(this.queue.isEmpty){
+                    this.running=false;
+                    this.stop();
+                }
+
+                current_note.send();
+
+            }
+
+        },50)
 
     }
 
     //PARALIZA PROCESSAMENTO DA FILA
     public stop(){
-        clearInterval(this.queue_run);
-        console.log("Parei o serviço de notificação")
+        if(!this.running){
+            clearInterval(this.queue_run);
+            logger.info("Parei o serviço de notificação")
+        }
     }
 
 }
