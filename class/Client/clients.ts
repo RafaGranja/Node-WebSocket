@@ -1,55 +1,120 @@
-class Client{
-    
-    public login : string;
-    public name : string;
-    public ws : any;
-    public key :any;
+import { STATUS, TYPE } from "../Consts/consts";
+import { Note, NotificationSession } from "../Notification/notification";
+import { NotificationService } from "../Notification/notificationService";
 
-    constructor(ws : any=null, login : string= "Servidor", name : string ="Delp",key:string=""){
+class Client {
+  public login: string;
+  public name: string;
+  public ws: any;
+  public key: any;
 
-        this.ws=ws;
-        this.login=login;
-        this.name=name;
-        this.key=key;
+  constructor(
+    ws: any = null,
+    login: string = "Servidor",
+    name: string = "Delp",
+    key: string = ""
+  ) {
+    this.ws = ws;
+    this.login = login;
+    this.name = name;
+    this.key = key;
+  }
 
+  toJSON(){
+    return {login:this.login,name:this.name,key:this.key}
+  }
+
+}
+
+class SessionCLients{
+
+  private clients: Map<any, Client>;
+
+  constructor() {
+    this.clients = new Map<any, Client>();
+  }
+
+  public addClient(ws: any, cli: Client) {
+    this.clients.set(ws, cli);
+  }
+
+  public removeClient(ws: any) {
+    this.clients.delete(ws);
+  }
+
+  public getClient(ws: any) {
+    return this.clients.get(ws);
+  }
+
+  public getClients() {
+    return this.clients;
+  }
+
+  public toJSON(){
+
+    let ret= new Array();
+    let i=0;
+    this.clients.forEach((item)=>{
+      ret.push(item.toJSON())
+      i++;
+    })
+
+    return JSON.stringify(ret);
+
+  }
+
+
+}
+
+class Clients {
+  private clients: Map<any, Client>;
+
+  private static instance: Clients;
+
+  //  RETORNA INSTÂNCIA DO SINGLETON
+  public static getInstance() {
+    if (!Clients.instance) {
+      Clients.instance = new Clients();
     }
 
-};
+    return Clients.instance;
+  }
 
-class Clients_Alone{
+  constructor() {
+    this.clients = new Map<any, Client>();
+  }
 
-    private clients : Set<any>;
+  public addClient(ws: any, cli: Client) {
+    this.clients.set(ws, cli);
+  }
 
-    private static instance : Clients_Alone;
+  public removeClient(ws: any) {
+    this.clients.delete(ws);
+  }
 
-    //  RETORNA INSTÂNCIA DO SINGLETON
-    public static getInstance(){
+  public getClient(ws: any) {
+    return this.clients.get(ws);
+  }
 
-        if (!Clients_Alone.instance) {
-            Clients_Alone.instance = new Clients_Alone();
-        }
+  public getClients() {
+    return this.clients;
+  }
 
-        return Clients_Alone.instance;
-    }
+  public toJSON(){
 
-    constructor(){
-        this.clients=new Set<any>;
-    }
+    let ret= new Array();
+    let i=0;
+    this.clients.forEach((item)=>{
+      ret.push(item.toJSON())
+      i++;
+    })
 
-    public addClient(cli:any){
+    return JSON.stringify(ret);
 
-        this.clients.add(cli)
-
-    }
-
-    public removeClient(cli:any){
-
-        this.clients.delete(cli)
-
-    }
+  }
 
 }
 
 const DefaultClient = new Client();
 
-export {Clients_Alone,Client,DefaultClient};
+export { SessionCLients, Clients, Client, DefaultClient };

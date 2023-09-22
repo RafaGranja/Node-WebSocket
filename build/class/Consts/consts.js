@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TYPE = exports.STATUS = void 0;
+exports.Consts = exports.SESSION = exports.TYPE = exports.STATUS = void 0;
 class STATUS {
     static toJSON() {
         return {
@@ -21,7 +21,7 @@ class TYPE {
             warning: this.WARNING,
             info: this.INFO,
             ok: this.OK,
-            action: this.ACTION
+            action: this.ACTION,
         };
     }
 }
@@ -31,3 +31,22 @@ TYPE.WARNING = 199;
 TYPE.OK = 200;
 TYPE.INFO = 201;
 TYPE.ACTION = 202;
+class SESSION {
+    static toJSON() {
+        return {
+            closed: this.CLOSED,
+            open: this.OPEN,
+        };
+    }
+}
+exports.SESSION = SESSION;
+SESSION.CLOSED = -1;
+SESSION.OPEN = 1;
+function Consts() {
+    return {
+        status: STATUS.toJSON(),
+        type: TYPE.toJSON(),
+        session: SESSION.toJSON(),
+    };
+}
+exports.Consts = Consts;

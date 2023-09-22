@@ -1,51 +1,73 @@
-import { Client,DefaultClient } from "../Client/clients";
-import { STATUS,TYPE } from "../Consts/consts";
+import { logger } from "../../src/log";
+import { Client, DefaultClient } from "../Client/clients";
+import { STATUS, TYPE } from "../Consts/consts";
 
-class Note{
+class Note {
+  public type: TYPE;
+  public message: string;
+  public title: string;
+  public status: STATUS;
 
-    public type : TYPE;
-    public message : string;
-    public title : string;
-    public status : STATUS;
+  constructor(
+    status: STATUS = STATUS.OK,
+    type: TYPE = TYPE.INFO,
+    message: string = "Mensagem vazia",
+    title: string = "Nova mensagem"
+  ) {
+    this.type = type;
+    this.message = message;
+    this.title = title;
+    this.status = status;
+  }
 
-    constructor(status : STATUS=STATUS.OK,type:TYPE=TYPE.INFO,message:string="Mensagem vazia",title:string="Nova mensagem"){
-        
-        this.type=type;
-        this.message=message;
-        this.title=title;
-        this.status=status;
-    }
-
-    public toJSON(){
-
-        return {type:this.type,message:this.message,title:this.title};
-    }
-
+  public toJSON() {
+    return { type: this.type, message: this.message, title: this.title };
+  }
 }
 
-class NotificationSession{
+class NotificationSession {
+  protected note: Note;
+  protected sender: Client;
+  protected destiny: Client;
+  protected status: STATUS;
 
-    private note : Note;
-    private sender : Client;
-    private destiny : Client;
-    private status : STATUS;
+  //ENVIA OS DADOS NA NOTIFICAÇÃO PARA O DESTINO
+  public send(): void {
+    this.destiny.ws.send(
+      JSON.stringify({
+        status: this.status,
+        body: this.note.toJSON(),
+        sender: this.sender,
+      })
+    );
+  }
 
-    //ENVIA OS DADOS NA NOTIFICAÇÃO PARA O DESTINO
-    public send():void{
-        
-        this.destiny.ws.send(JSON.stringify({status:this.status,body:this.note.toJSON(),sender:this.sender}));
-        
-    }
-
-    constructor(destiny:Client,note:Note=new Note(),sender:Client=DefaultClient){
-        
-        this.sender=sender;
-        this.destiny=destiny;
-        this.note=note;
-        this.status=note.status
-
-    }
-
+  constructor(
+    destiny: Client,
+    note: Note = new Note(),
+    sender: Client = DefaultClient
+  ) {
+    this.sender = sender;
+    this.destiny = destiny;
+    this.note = note;
+    this.status = note.status;
+  }
 }
 
-export {NotificationSession,Note}
+class NotificationError extends NotificationSession {
+
+  constructor(destiny: Client, note: string, sender: Client = DefaultClient) {
+    super(
+      destiny,
+      new Note(
+        STATUS.ERROR,
+        TYPE.ERROR,
+        JSON.stringify({ content: note, action: "error" }),
+        "Error"
+      ),
+      sender
+    );
+  }
+}
+
+export { NotificationSession, NotificationError, Note };

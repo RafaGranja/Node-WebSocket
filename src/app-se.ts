@@ -1,48 +1,86 @@
 import { DelpSession } from "../class/Session/session";
-import { Client,Clients_Alone, DefaultClient } from "../class/Client/clients";
+import { Client, Clients, DefaultClient } from "../class/Client/clients";
 import { DelpSessions } from "../class/Session/controlSessions";
-import { logger } from "./log";
-import { Note } from "../class/Notification/notification";
-import { STATUS } from "../class/Consts/consts";
+import { Note, NotificationSession } from "../class/Notification/notification";
+import { SESSION, STATUS, TYPE } from "../class/Consts/consts";
+import { NotificationService } from "../class/Notification/notificationService";
+import { onClose, onError, onMessage } from "./app-ws";
 
-function initSession(key:string,ws : any, login : string, name : string) : Boolean{
+function initSession(key: string, cli?: Client): Boolean {
+  if (key == undefined || key == null || key == "") {
+    throw Error("key informada não é válida");
+  }
+  if (cli == undefined || cli == null) {
+    throw Error("Client informado não é válido");
+  } else {
 
-    if(key==undefined || key==null || key==""){
+    cli.ws.removeAllListeners();
 
-        throw Error("key informada não é válida");
+    cli = new Client(cli.ws, cli.login, cli.name, key);
 
+    if (DelpSessions.getInstance().hasSession(key)) {
+      if(DelpSessions.getInstance().getSession(key)?.getState()==SESSION.CLOSED){
+        throw new Error("Sessão está fechada para entrada de novos usuários")
+      }
+      else{
+        DelpSessions.getInstance().addClient(cli);
+      }
+    } else {
+      const new_session: DelpSession = new DelpSession(key, cli);
+      DelpSessions.getInstance().addSession(new_session, key);
+      DelpSessions.getInstance().addClient(cli);
     }
-    else{
+  }
 
-        const cli : Client = new Client(ws,login,name,key);
-
-        if(DelpSessions.getInstance().hasSession(key)){
-
-            DelpSessions.getInstance().addClient(cli);
-
-        }
-        else{
-
-            
-            const new_session : DelpSession = new DelpSession(key,cli)
-            DelpSessions.getInstance().addSession(new_session,key)
-            DelpSessions.getInstance().addClient(cli);
-            
-        }
-        Clients_Alone.getInstance().removeClient(ws);
-
-
-    }
-
-    return true;
-
+  return true;
 }
 
-
-function NotifySession(key:string,sender:any=DefaultClient,type?:string,title?:string,message?:string,status?:number){
-
-    DelpSessions.getInstance().getSession(key)?.notifyAll(DefaultClient,new Note(status,type,JSON.stringify({content:message,action:3}),title))
-
+function NotifySession(
+  key: string,
+  sender: Client = DefaultClient,
+  action: string,
+  type?: string,
+  title?: string,
+  message?: string,
+  status?: number
+) {
+  DelpSessions.getInstance()
+    .getSession(key)
+    ?.notifyAll(
+      sender,
+      new Note(
+        status,
+        type,
+        JSON.stringify({ content: message, action: action }),
+        title
+      )
+    );
 }
 
-export {initSession,NotifySession};
+function autenticate(ws: any, login: string, name: string) {
+
+  ws.removeAllListeners();
+
+  ws.on("message", (data: any) => onMessage(cli, data));
+  ws.on("error", (error: any) => onError(cli, error));
+  ws.on("close", (ws: any) => onClose(cli));
+
+  let cli: Client = new Client(ws, login, name);
+
+  Clients.getInstance().addClient(ws, cli);
+  const note = new NotificationSession(
+    cli,
+    new Note(
+      STATUS.OK,
+      TYPE.INFO,
+      JSON.stringify({
+        content: `Autenticado com sucesso`,
+        action: "autenticate",
+      }),
+      "Sucesso"
+    )
+  );
+  NotificationService.getInstance().addNotification(note);
+}
+
+export { initSession, NotifySession, autenticate };
