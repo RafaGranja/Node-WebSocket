@@ -1,0 +1,352 @@
+openapi: 3.0.0
+info:
+  title: DelpSessions
+  description: WebSocket para conexão entre sessões do Fluig
+  contact:
+    email: rafael.granja@delp.com.br
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: AdminSession
+  description: Secured Admin-only calls
+- name: AuthSession
+  description: Secured autenticated-only calls
+- name: UserSession
+  description: Operations available calls
+paths:
+  /returnConst:
+    get:
+      tags:
+      - UserSession
+      summary: return consts
+      description: |
+        Return a object that contains the conts of the Socket messages
+      operationId: returnConsts
+      parameters:
+      - name: action
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: returnConsts
+      responses:
+        "199":
+          description: await processing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Await'
+                x-content-type: application/json
+        "200":
+          description: result of consts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consts'
+                x-content-type: application/json
+      x-swagger-router-controller: UserSession
+  /Autenticate:
+    post:
+      tags:
+      - UserSession
+      summary: autenticate user
+      description: |
+        Autenticate the connection with user login and name
+      operationId: autenticate
+      parameters:
+      - name: action
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: autenticate
+      - name: login
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: rafael.granja
+      - name: name
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Rafael Granja
+      responses:
+        "199":
+          description: await processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Await'
+        "200":
+          description: result of autenticate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageAuth'
+      x-swagger-router-controller: UserSession
+  /InitSession:
+    post:
+      tags:
+      - AuthSession
+      summary: init a session
+      description: |
+        init or enter in a session
+      operationId: initSession
+      parameters:
+      - name: key
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 3.07840.32.001
+      responses:
+        "199":
+          description: await processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Await'
+        "200":
+          description: result of autenticate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageAuth'
+        "403":
+          description: error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+      x-swagger-router-controller: AuthSession
+  /notifySession:
+    post:
+      tags:
+      - AuthSession
+      summary: send a message in session
+      description: |
+        send a message to all members of the session
+      operationId: notifySession
+      parameters:
+      - name: type
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+        example: consts.type.action
+      - name: title
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: new user
+      - name: message
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: new user logged in
+      - name: status
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+        example: consts.status.ok
+      - name: action
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: notifySession | execScript
+      responses:
+        "199":
+          description: await processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Await'
+        "403":
+          description: error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+      x-swagger-router-controller: AuthSession
+components:
+  schemas:
+    Consts:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 200
+        body:
+          type: object
+          example:
+            type: 201
+            message:
+              action: returnConsts
+              content:
+                status:
+                  error: 403
+                  wait: 199
+                  ok: 200
+                type:
+                  error: 403
+                  warning: 199
+                  ok: 200
+                  info: 201
+                  action: 202
+                session:
+                  closed: -1
+                  open: 1
+              title: CONSTS
+        sender:
+          type: object
+          example:
+            login: Servidor
+            name: DelpSessions
+            key: ""
+      example:
+        sender:
+          login: Servidor
+          name: DelpSessions
+          key: ""
+        body:
+          type: 201
+          message:
+            action: returnConsts
+            content:
+              status:
+                error: 403
+                wait: 199
+                ok: 200
+              type:
+                error: 403
+                warning: 199
+                ok: 200
+                info: 201
+                action: 202
+              session:
+                closed: -1
+                open: 1
+            title: CONSTS
+        status: 200
+    Await:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 199
+        body:
+          type: object
+          example:
+            type: 201
+            message:
+              action: await
+              content: Processando...
+        sender:
+          type: object
+          example:
+            login: Servidor
+            name: DelpSessions
+            key: ""
+    AuthError:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 403
+        body:
+          type: object
+          example:
+            type: 403
+            message:
+              action: error
+              content: Necessária autenticação prévia
+            title: Error
+        sender:
+          type: object
+          example:
+            login: Servidor
+            name: DelpSessions
+            key: ""
+    Error:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 403
+        body:
+          type: object
+          example:
+            type: 403
+            message:
+              action: error
+              content: texto do erro
+            title: Error
+        sender:
+          type: object
+          example:
+            login: Servidor
+            name: DelpSessions
+            key: ""
+    MessageAuth:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 200
+        body:
+          type: object
+          example:
+            type: 201
+            message:
+              action: autenticate
+              content: Autenticado com sucesso
+            title: Sucesso
+        sender:
+          type: object
+          example:
+            login: Servidor
+            name: DelpSessions
+            key: ""
+      example:
+        sender:
+          login: Servidor
+          name: DelpSessions
+          key: ""
+        body:
+          type: 201
+          message:
+            action: autenticate
+            content: Autenticado com sucesso
+          title: Sucesso
+        status: 200
