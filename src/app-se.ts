@@ -13,16 +13,16 @@ function initSession(key: string, cli?: Client): Boolean {
   if (cli == undefined || cli == null) {
     throw Error("Client informado não é válido");
   } else {
-
     cli.ws.removeAllListeners();
 
     cli = new Client(cli.ws, cli.login, cli.name, key);
 
     if (DelpSessions.getInstance().hasSession(key)) {
-      if(DelpSessions.getInstance().getSession(key)?.getState()==SESSION.CLOSED){
-        throw new Error("Sessão está fechada para entrada de novos usuários")
-      }
-      else{
+      if (
+        DelpSessions.getInstance().getSession(key)?.getState() == SESSION.CLOSED
+      ) {
+        throw new Error("Sessão está fechada para entrada de novos usuários");
+      } else {
         DelpSessions.getInstance().addClient(cli);
       }
     } else {
@@ -58,7 +58,6 @@ function NotifySession(
 }
 
 function autenticate(ws: any, login: string, name: string) {
-
   ws.removeAllListeners();
 
   ws.on("message", (data: any) => onMessage(cli, data));

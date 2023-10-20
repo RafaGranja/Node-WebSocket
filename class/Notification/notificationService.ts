@@ -25,14 +25,13 @@ export class NotificationService {
   }
 
   //ADICIONA NOTIFICAÇÃO NA FILA
-  public addNotification(notificaion:NotificationSession) {
+  public addNotification(notificaion: NotificationSession) {
     this.queue.enqueue(notificaion);
     this.run();
   }
 
   //INICIA PROCESSAMENTO DA FILA
   public run() {
-
     this.running = true;
 
     this.queue_run = setInterval(() => {

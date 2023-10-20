@@ -75,12 +75,12 @@ class Client {
     }
   }
 
-  notifySession() {
+  notifySession(title,message) {
     this.socket.send(
       JSON.stringify({
         type: consts.type.action,
-        title: "Teste",
-        message: "Teste",
+        title: title,
+        message: message,
         status: consts.status.ok,
         action: "notifySession",
       })

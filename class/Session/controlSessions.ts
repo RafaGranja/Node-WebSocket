@@ -71,16 +71,15 @@ export class DelpSessions {
     NotificationService.getInstance().addNotification(note);
   }
 
-  public toJSON(){
+  public toJSON() {
     let ret;
-    let i =0;
-    this.sessions.forEach((item)=>{
-      ret[i]=item.toJSON()
+    let i = 0;
+    this.sessions.forEach((item) => {
+      ret[i] = item.toJSON();
       i++;
-    })
+    });
 
     return JSON.stringify(ret);
-
   }
 
   public addSession(new_session: DelpSession, key: string) {
@@ -112,7 +111,6 @@ export class DelpSessions {
   }
 
   private processAction(jsonObject: any, cli: Client) {
-
     const note = new NotificationSession(
       cli,
       new Note(
@@ -125,7 +123,6 @@ export class DelpSessions {
     NotificationService.getInstance().addNotification(note);
 
     try {
-
       if (!validaValor(jsonObject.action)) {
         throw Error("action informado não é válido");
       } else {
@@ -162,14 +159,16 @@ export class DelpSessions {
           case "lockSession":
             this.lockSession(cli);
             break;
-          case 'returnSessions':
+          case "returnSessions":
             this.returnSessions(cli);
-              break;
-          case 'returnClients':
+            break;
+          case "returnClients":
             this.returnClients(cli);
-              break;
+            break;
           default:
-            throw Error("action informado - "+jsonObject.action+" - não é válido");
+            throw Error(
+              "action informado - " + jsonObject.action + " - não é válido"
+            );
         }
       }
     } catch (e: any) {
@@ -221,30 +220,38 @@ export class DelpSessions {
     this.getSession(sender.key)?.deleteClients();
   }
 
-  private returnSessions(cli:Client){
+  private returnSessions(cli: Client) {
     const note = new NotificationSession(
-        cli,
-        new Note(
-          STATUS.OK,
-          TYPE.OK,
-          JSON.stringify({ action: "returnSessions", content: DelpSessions.getInstance().getSession(cli.key)?.toJSON()}),
-          "Sucesso"
-        )
-      );
-      NotificationService.getInstance().addNotification(note);
+      cli,
+      new Note(
+        STATUS.OK,
+        TYPE.OK,
+        JSON.stringify({
+          action: "returnSessions",
+          content: DelpSessions.getInstance().getSession(cli.key)?.toJSON(),
+        }),
+        "Sucesso"
+      )
+    );
+    NotificationService.getInstance().addNotification(note);
   }
 
-  private returnClients(cli:Client){
+  private returnClients(cli: Client) {
     const note = new NotificationSession(
-        cli,
-        new Note(
-          STATUS.OK,
-          TYPE.OK,
-          JSON.stringify({ action: "returnClients", content: DelpSessions.getInstance().getSession(cli.key)?.getClients().toJSON()}),
-          "Sucesso"
-        )
-      );
-      NotificationService.getInstance().addNotification(note);
-}
-
+      cli,
+      new Note(
+        STATUS.OK,
+        TYPE.OK,
+        JSON.stringify({
+          action: "returnClients",
+          content: DelpSessions.getInstance()
+            .getSession(cli.key)
+            ?.getClients()
+            .toJSON(),
+        }),
+        "Sucesso"
+      )
+    );
+    NotificationService.getInstance().addNotification(note);
+  }
 }

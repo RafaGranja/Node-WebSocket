@@ -20,14 +20,12 @@ class Client {
     this.key = key;
   }
 
-  toJSON(){
-    return {login:this.login,name:this.name,key:this.key}
+  toJSON() {
+    return { login: this.login, name: this.name, key: this.key };
   }
-
 }
 
-class SessionCLients{
-
+class SessionCLients {
   private clients: Map<any, Client>;
 
   constructor() {
@@ -50,20 +48,16 @@ class SessionCLients{
     return this.clients;
   }
 
-  public toJSON(){
-
-    let ret= new Array();
-    let i=0;
-    this.clients.forEach((item)=>{
-      ret.push(item.toJSON())
+  public toJSON() {
+    let ret = new Array();
+    let i = 0;
+    this.clients.forEach((item) => {
+      ret.push(item.toJSON());
       i++;
-    })
+    });
 
     return JSON.stringify(ret);
-
   }
-
-
 }
 
 class Clients {
@@ -100,19 +94,16 @@ class Clients {
     return this.clients;
   }
 
-  public toJSON(){
-
-    let ret= new Array();
-    let i=0;
-    this.clients.forEach((item)=>{
-      ret.push(item.toJSON())
+  public toJSON() {
+    let ret = new Array();
+    let i = 0;
+    this.clients.forEach((item) => {
+      ret.push(item.toJSON());
       i++;
-    })
+    });
 
     return JSON.stringify(ret);
-
   }
-
 }
 
 const DefaultClient = new Client();

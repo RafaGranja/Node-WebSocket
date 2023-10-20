@@ -107,10 +107,10 @@ class DelpSessions {
                     case "lockSession":
                         this.lockSession(cli);
                         break;
-                    case 'returnSessions':
+                    case "returnSessions":
                         this.returnSessions(cli);
                         break;
-                    case 'returnClients':
+                    case "returnClients":
                         this.returnClients(cli);
                         break;
                     default:
@@ -171,12 +171,19 @@ class DelpSessions {
     }
     returnSessions(cli) {
         var _a;
-        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({ action: "returnSessions", content: (_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.toJSON() }), "Sucesso"));
+        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
+            action: "returnSessions",
+            content: (_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.toJSON(),
+        }), "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     returnClients(cli) {
         var _a;
-        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({ action: "returnClients", content: (_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().toJSON() }), "Sucesso"));
+        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
+            action: "returnClients",
+            content: (_a = DelpSessions.getInstance()
+                .getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().toJSON(),
+        }), "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
 }

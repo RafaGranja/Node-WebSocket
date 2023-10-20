@@ -55,7 +55,6 @@ class NotificationSession {
 }
 
 class NotificationError extends NotificationSession {
-
   constructor(destiny: Client, note: string, sender: Client = DefaultClient) {
     super(
       destiny,

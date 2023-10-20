@@ -1,0 +1,295 @@
+openapi: 3.0.0
+servers: []
+info:
+  description: WebSocket para conexão entre sessões do Fluig
+  version: "1.0.0"
+  title: DelpSessions
+  contact:
+    email: rafael.granja@delp.com.br
+tags:
+  - name: AdminSession
+    description: Secured Admin-only calls
+  - name: AuthSession
+    description: Secured autenticated-only calls
+  - name: UserSession
+    description: Operations available calls
+paths:
+  /returnConst:
+    get:
+      tags:
+        - UserSession
+      summary: return consts
+      operationId: returnConsts
+      description: |
+        Return a object that contains the conts of the Socket messages
+      parameters:
+        - name  : action
+          in : path
+          example : returnConsts
+          schema : 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: result of consts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consts'
+        '199':
+          description: await processing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Await'
+  /Autenticate:
+     post:
+      tags:
+        - UserSession
+      summary: autenticate user
+      operationId: autenticate
+      description: |
+        Autenticate the connection with user login and name
+      parameters:
+        - name  : action
+          in : path
+          example : autenticate
+          schema : 
+            type: string
+          required: true
+        - name  : login
+          in : path
+          example : rafael.granja
+          schema : 
+            type: string
+          required: true
+        - name  : name
+          in : path
+          example : Rafael Granja
+          schema : 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: result of autenticate
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/MessageAuth'
+        '199':
+          description: await processing
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Await'
+  /InitSession:
+     post:
+      tags:
+        - AuthSession
+      summary: init a session
+      operationId: initSession
+      description: |
+        init or enter in a session
+      parameters:
+        - name  : key
+          in : path
+          example : 3.07840.32.001
+          schema : 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: result of autenticate
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/MessageAuth'
+        '199':
+          description: await processing
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Await'
+        '403':
+          description: error processing
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/AuthError'
+  /notifySession:
+     post:
+      tags:
+        - AuthSession
+      summary: send a message in session
+      operationId: notifySession
+      description: |
+        send a message to all members of the session
+      parameters:
+        - name  : type
+          in : path
+          example : consts.type.action
+          schema : 
+            type: number
+          required: true
+        - name  : title
+          in : path
+          example : new user
+          schema : 
+            type: string
+          required: true
+        - name  : message
+          in : path
+          example : new user logged in
+          schema : 
+            type: string
+          required: true
+        - name  : status
+          in : path
+          example : consts.status.ok
+          schema : 
+            type: number
+          required: true
+        - name  : action
+          in : path
+          example : notifySession | execScript
+          schema : 
+            type: string
+          required: true
+      responses:
+        '199':
+          description: await processing
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Await'
+        '403':
+          description: error processing
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/AuthError'
+components:
+  schemas:
+    Consts:
+      properties:
+        status :
+          type: number
+          example: 200
+        body:
+          example: 
+            type : 201
+            message : 
+              action : returnConsts 
+              content : 
+                  status :
+                    error : 403
+                    wait : 199
+                    ok : 200
+                  type :
+                    error : 403
+                    warning : 199
+                    ok : 200
+                    info : 201
+                    action : 202
+                  session :
+                    closed : -1
+                    open : 1
+              title : CONSTS
+          type : object
+        sender :
+          example :
+            login : Servidor
+            name : DelpSessions
+            key : ''
+          type : object
+      type: object
+    Await:
+      properties:
+        status :
+          type: number
+          example: 199
+        body:
+          example: 
+            type : 201
+            message : 
+              action : await 
+              content : Processando...
+          type : object
+        sender :
+          example :
+            login : Servidor
+            name : DelpSessions
+            key : ''
+          type : object
+      type: object
+    AuthError:
+      properties:
+        status :
+          type: number
+          example: 403
+        body:
+          example: 
+            type : 403
+            message : 
+              action : error 
+              content : Necessária autenticação prévia
+            title : Error
+          type : object
+        sender :
+          example :
+            login : Servidor
+            name : DelpSessions
+            key : ''
+          type : object
+      type: object
+    Error:
+      properties:
+        status :
+          type: number
+          example: 403
+        body:
+          example: 
+            type : 403
+            message : 
+              action : error 
+              content : texto do erro 
+            title : Error
+          type : object
+        sender :
+          example :
+            login : Servidor
+            name : DelpSessions
+            key : ''
+          type : object
+      type: object
+    MessageAuth:
+      properties:
+        status :
+          type: number
+          example: 200
+        body:
+          example: 
+            type : 201
+            message : 
+              action : autenticate 
+              content : Autenticado com sucesso
+            title : Sucesso
+          type : object
+        sender :
+          example :
+            login : Servidor
+            name : DelpSessions
+            key : ''
+          type : object
+      type: object

@@ -40,7 +40,6 @@ function onMessage(cli: Client, data: any) {
   NotificationService.getInstance().addNotification(note);
 
   try {
-
     let jsonObject: any = JSON.parse(data);
 
     let cli_aux = Clients.getInstance().getClient(cli.ws);
@@ -64,8 +63,12 @@ function onMessage(cli: Client, data: any) {
           }
           break;
         case "initSession":
-          logger.info(cli,jsonObject)
-          if (cli == undefined || cli == null || cli.login==DefaultClient.login) {
+          logger.info(cli, jsonObject);
+          if (
+            cli == undefined ||
+            cli == null ||
+            cli.login == DefaultClient.login
+          ) {
             throw Error("Necessária autenticação prévia");
           } else if (!validaValor(cli.name)) {
             throw Error("name informado não é válido");
@@ -75,12 +78,12 @@ function onMessage(cli: Client, data: any) {
             initSession(jsonObject.key, cli);
           }
           break;
-        case 'returnSessions':
-            returnSessions(cli);
-            break;
-        case 'returnClients':
-            returnClients(cli);
-            break;
+        case "returnSessions":
+          returnSessions(cli);
+          break;
+        case "returnClients":
+          returnClients(cli);
+          break;
         default:
           throw Error("action informado não é válido");
       }
@@ -114,30 +117,36 @@ function onConnection(ws: any, req: any) {
   logger.info(`onConnection`);
 }
 
-function returnSessions(cli:Client){
-    const note = new NotificationSession(
-        cli,
-        new Note(
-          STATUS.OK,
-          TYPE.OK,
-          JSON.stringify({ action: "returnSessions", content: DelpSessions.getInstance().toJSON()}),
-          "Sucesso"
-        )
-      );
-      NotificationService.getInstance().addNotification(note);
+function returnSessions(cli: Client) {
+  const note = new NotificationSession(
+    cli,
+    new Note(
+      STATUS.OK,
+      TYPE.OK,
+      JSON.stringify({
+        action: "returnSessions",
+        content: DelpSessions.getInstance().toJSON(),
+      }),
+      "Sucesso"
+    )
+  );
+  NotificationService.getInstance().addNotification(note);
 }
 
-function returnClients(cli:Client){
-    const note = new NotificationSession(
-        cli,
-        new Note(
-          STATUS.OK,
-          TYPE.OK,
-          JSON.stringify({ action: "returnClients", content: Clients.getInstance().toJSON()}),
-          "Sucesso"
-        )
-      );
-      NotificationService.getInstance().addNotification(note);
+function returnClients(cli: Client) {
+  const note = new NotificationSession(
+    cli,
+    new Note(
+      STATUS.OK,
+      TYPE.OK,
+      JSON.stringify({
+        action: "returnClients",
+        content: Clients.getInstance().toJSON(),
+      }),
+      "Sucesso"
+    )
+  );
+  NotificationService.getInstance().addNotification(note);
 }
 
 module.exports = (server: any) => {
@@ -152,5 +161,4 @@ module.exports = (server: any) => {
   return wss;
 };
 
-
-export {onMessage,onClose,onError};
+export { onMessage, onClose, onError };

@@ -50,7 +50,9 @@ function onMessage(cli, data) {
                     break;
                 case "initSession":
                     log_1.logger.info(cli, jsonObject);
-                    if (cli == undefined || cli == null || cli.login == clients_1.DefaultClient.login) {
+                    if (cli == undefined ||
+                        cli == null ||
+                        cli.login == clients_1.DefaultClient.login) {
                         throw Error("Necessária autenticação prévia");
                     }
                     else if (!(0, utils_1.validaValor)(cli.name)) {
@@ -63,10 +65,10 @@ function onMessage(cli, data) {
                         (0, app_se_1.initSession)(jsonObject.key, cli);
                     }
                     break;
-                case 'returnSessions':
+                case "returnSessions":
                     returnSessions(cli);
                     break;
-                case 'returnClients':
+                case "returnClients":
                     returnClients(cli);
                     break;
                 default:
@@ -93,11 +95,17 @@ function onConnection(ws, req) {
     log_1.logger.info(`onConnection`);
 }
 function returnSessions(cli) {
-    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({ action: "returnSessions", content: controlSessions_1.DelpSessions.getInstance().toJSON() }), "Sucesso"));
+    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
+        action: "returnSessions",
+        content: controlSessions_1.DelpSessions.getInstance().toJSON(),
+    }), "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 function returnClients(cli) {
-    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({ action: "returnClients", content: clients_1.Clients.getInstance().toJSON() }), "Sucesso"));
+    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
+        action: "returnClients",
+        content: clients_1.Clients.getInstance().toJSON(),
+    }), "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 module.exports = (server) => {

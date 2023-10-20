@@ -1,4 +1,4 @@
-import { Client,SessionCLients } from "../Client/clients";
+import { Client, SessionCLients } from "../Client/clients";
 import { SESSION } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
@@ -31,7 +31,7 @@ export class DelpSession {
     });
   }
 
-  public getClients(){
+  public getClients() {
     return this.clients;
   }
 
@@ -52,8 +52,8 @@ export class DelpSession {
     });
   }
 
-  public toJSON(){
-    return {key:this.key,creator:this.creator.login,state:this.state}
+  public toJSON() {
+    return { key: this.key, creator: this.creator.login, state: this.state };
   }
 
   constructor(key: string, cli: Client) {

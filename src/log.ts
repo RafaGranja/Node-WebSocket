@@ -11,7 +11,6 @@ const options = {
   maxSize: "20m",
 
   maxFiles: "31d",
-
 };
 
 const options2 = {
@@ -25,7 +24,7 @@ const options2 = {
 
   maxFiles: "31d",
 
-  level: "error"
+  level: "error",
 };
 
 const logger = winston.createLogger({
@@ -39,8 +38,8 @@ const logger = winston.createLogger({
   ),
   defaultMeta: { service: "user-service" },
   transports: [
-    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
-    new winston.transports.File({ filename: "logs/server.log" }),
+    //new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+    //new winston.transports.File({ filename: "logs/server.log" }),
     new winston.transports.DailyRotateFile(options),
     new winston.transports.DailyRotateFile(options2),
   ],
