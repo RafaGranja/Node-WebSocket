@@ -1,6 +1,7 @@
 import { STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
+import { DelpSessions } from "../Session/controlSessions";
 
 class Client {
   public login: string;
@@ -36,8 +37,14 @@ class SessionCLients {
     this.clients.set(ws, cli);
   }
 
-  public removeClient(ws: any) {
-    this.clients.delete(ws);
+  public removeClient(ws: Client) {
+    this.clients.delete(ws.ws);
+    DelpSessions.getInstance().getSession(ws.key)?.notifyAll(ws,new Note(STATUS.OK,TYPE.INFO,
+      JSON.stringify({
+        action: "deleteClient",
+        content: ws.login,
+      }),
+      "Sucesso"))
   }
 
   public getClient(ws: any) {

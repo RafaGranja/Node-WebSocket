@@ -11,6 +11,7 @@ import {
 import { NotificationService } from "../class/Notification/notificationService";
 import { validaValor } from "../class/Utils/utils";
 import { DelpSessions } from "../class/Session/controlSessions";
+import { CustomError } from "../class/Error/customError";
 
 //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
 function onClose(cli: Client) {
@@ -21,7 +22,7 @@ function onClose(cli: Client) {
 //MÉTODO CHAMADO AO OCORRER UM ERRO DE PROCESSAMENTO
 function onError(cli: Client, err: any) {
   logger.error(`onError:${cli}, message:${err.message}`);
-  const note = new NotificationError(cli, err.message);
+  const note = new NotificationError(cli, err.message,0);
   NotificationService.getInstance().addNotification(note);
 }
 
@@ -47,7 +48,7 @@ function onMessage(cli: Client, data: any) {
     cli = cli_aux == undefined ? cli : cli_aux;
 
     if (!validaValor(jsonObject.action)) {
-      throw Error("action informado não é válido");
+      throw new CustomError("action informado não é válido",1);
     } else {
       switch (jsonObject.action) {
         case "returnConst":
@@ -55,9 +56,9 @@ function onMessage(cli: Client, data: any) {
           break;
         case "autenticate":
           if (!validaValor(jsonObject.name)) {
-            throw Error("name informado não é válido");
+            throw new CustomError("name informado não é válido",1);
           } else if (!validaValor(jsonObject.login)) {
-            throw Error("login informado não é válido");
+            throw new CustomError("login informado não é válido",1);
           } else {
             autenticate(cli.ws, jsonObject.login, jsonObject.name);
           }
@@ -69,11 +70,11 @@ function onMessage(cli: Client, data: any) {
             cli == null ||
             cli.login == DefaultClient.login
           ) {
-            throw Error("Necessária autenticação prévia");
+            throw new CustomError("Necessária autenticação prévia",1);
           } else if (!validaValor(cli.name)) {
-            throw Error("name informado não é válido");
+            throw new CustomError("name informado não é válido",1);
           } else if (!validaValor(cli.login)) {
-            throw Error("login informado não é válido");
+            throw new CustomError("login informado não é válido",1);
           } else {
             initSession(jsonObject.key, cli);
           }
@@ -85,11 +86,12 @@ function onMessage(cli: Client, data: any) {
           returnClients(cli);
           break;
         default:
-          throw Error("action informado não é válido");
+          throw new CustomError("action informado não é válido",1);
       }
     }
   } catch (e: any) {
-    const note = new NotificationError(cli, e?.message);
+    e = JSON.parse(e);
+    const note = new NotificationError(cli, e?.message,e?.critical);
     NotificationService.getInstance().addNotification(note);
   }
 }

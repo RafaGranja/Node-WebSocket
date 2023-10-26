@@ -244,6 +244,7 @@ components:
             message : 
               action : error 
               content : Necessária autenticação prévia
+              critical : 0
             title : Error
           type : object
         sender :
@@ -264,6 +265,7 @@ components:
             message : 
               action : error 
               content : texto do erro 
+              critical : 0
             title : Error
           type : object
         sender :

@@ -5,6 +5,7 @@ import { Note, NotificationSession } from "../class/Notification/notification";
 import { SESSION, STATUS, TYPE } from "../class/Consts/consts";
 import { NotificationService } from "../class/Notification/notificationService";
 import { onClose, onError, onMessage } from "./app-ws";
+import { CustomError } from "../class/Error/customError";
 
 function initSession(key: string, cli?: Client): Boolean {
   if (key == undefined || key == null || key == "") {
@@ -21,7 +22,7 @@ function initSession(key: string, cli?: Client): Boolean {
       if (
         DelpSessions.getInstance().getSession(key)?.getState() == SESSION.CLOSED
       ) {
-        throw new Error("Sessão está fechada para entrada de novos usuários");
+        throw new CustomError("Sessão está fechada para entrada de novos usuários",1);
       } else {
         DelpSessions.getInstance().addClient(cli);
       }

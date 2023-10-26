@@ -291,6 +291,7 @@ components:
             message:
               action: error
               content: Necessária autenticação prévia
+              critical : 1
             title: Error
         sender:
           type: object
@@ -311,6 +312,7 @@ components:
             message:
               action: error
               content: texto do erro
+              critical : 0
             title: Error
         sender:
           type: object

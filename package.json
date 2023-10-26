@@ -5,12 +5,13 @@
   "main": "index.ts",
   "scripts": {
     "test": "node test/index.js",
-    "start": "npx tsc && node -r dotenv/config build/index"
+    "start": "concurrently \"npx tsc && node -r dotenv/config build/index\" \"cd DocumentationServer && npm run start\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

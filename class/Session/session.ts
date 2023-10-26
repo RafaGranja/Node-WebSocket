@@ -36,12 +36,13 @@ export class DelpSession {
   }
 
   public deleteClient(cli: Client) {
-    this.clients.removeClient(cli.ws);
+    this.clients.removeClient(cli);
     cli.ws.close();
+
   }
 
   public deleteClientMap(cli: Client) {
-    this.clients.removeClient(cli.ws);
+    this.clients.removeClient(cli);
   }
 
   public deleteClients(sender?: Client) {

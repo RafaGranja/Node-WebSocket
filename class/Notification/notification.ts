@@ -55,13 +55,13 @@ class NotificationSession {
 }
 
 class NotificationError extends NotificationSession {
-  constructor(destiny: Client, note: string, sender: Client = DefaultClient) {
+  constructor(destiny: Client, note: string, critical : number, sender: Client = DefaultClient) {
     super(
       destiny,
       new Note(
         STATUS.ERROR,
         TYPE.ERROR,
-        JSON.stringify({ content: note, action: "error" }),
+        JSON.stringify({ content: note, action: "error" , critical : critical}),
         "Error"
       ),
       sender

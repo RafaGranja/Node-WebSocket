@@ -1,5 +1,5 @@
 import { Client, Clients, DefaultClient } from "../Client/clients";
-import { STATUS, TYPE } from "../Consts/consts";
+import { Consts, SESSION, STATUS, TYPE } from "../Consts/consts";
 import {
   Note,
   NotificationSession,
@@ -10,6 +10,7 @@ import { DelpSession } from "./session";
 import { logger } from "../../src/log";
 import { validaValor } from "../Utils/utils";
 import { json } from "stream/consumers";
+import { CustomError } from "../Error/customError";
 
 export class DelpSessions {
   private sessions: Map<string, DelpSession>;
@@ -32,14 +33,14 @@ export class DelpSessions {
   //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
   public onClose(cli: Client) {
     this.sessions.get(cli.key)?.deleteClientMap(cli);
-    Clients.getInstance().removeClient(cli.ws);
+    Clients.getInstance().removeClient(cli);
     logger.info(`onClose: ${cli}`);
   }
 
   //MÉTODO QUE É CHAMADO AO OCORRER UM ERRO NO WS-CLIENT
   public onError(cli: Client, err: any) {
     logger.error(`onError:${cli.ws}, message:${err.message}`);
-    const note = new NotificationError(cli, err);
+    const note = new NotificationError(cli, err,0);
     NotificationService.getInstance().addNotification(note);
   }
 
@@ -124,7 +125,7 @@ export class DelpSessions {
 
     try {
       if (!validaValor(jsonObject.action)) {
-        throw Error("action informado não é válido");
+        throw new CustomError("action informado não é válido",1);
       } else {
         switch (jsonObject.action) {
           case "notifySession":
@@ -145,7 +146,8 @@ export class DelpSessions {
             break;
           case "statusSession":
             if (!validaValor(jsonObject.state)) {
-              throw new Error("Necessário informar um estado para sessão");
+              throw new CustomError("Necessário informar um estado para sessão",0);
+
             } else {
               this.statusSession(jsonObject.state, cli);
             }
@@ -166,13 +168,14 @@ export class DelpSessions {
             this.returnClients(cli);
             break;
           default:
-            throw Error(
-              "action informado - " + jsonObject.action + " - não é válido"
-            );
+            throw Error(JSON.stringify({
+              message:"action informado - " + jsonObject.action + " - não é válido",critical:1
+            }));
         }
       }
     } catch (e: any) {
-      const note = new NotificationError(cli, e?.message);
+      e = JSON.parse(e);
+      const note = new NotificationError(cli, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
   }
@@ -181,9 +184,9 @@ export class DelpSessions {
     let session = this.getSession(sender.key);
 
     if (session == undefined) {
-      throw new Error("Sessão informada é inválida");
+      throw new CustomError("Sessão informada é inválida",0);
     } else if (session.getCreator() != sender) {
-      throw new Error("Usuário não possui acesso a esta funcionalidade");
+      throw new CustomError("Usuário não possui acesso a esta funcionalidade",0);
     } else {
       this.getSession(sender.key)?.setState(state);
     }
@@ -196,10 +199,10 @@ export class DelpSessions {
       if (sender != this.getSession(sender.key)?.getCreator()) {
         this.getSession(sender.key)?.deleteClient(cli_obj);
       } else {
-        throw new Error("Usuário não possui permissão para a ação");
+        throw new CustomError("Usuário não possui permissão para a ação");
       }
     } else {
-      throw new Error("Usuário selecionado não encontrado na sessão");
+      throw new CustomError("Usuário selecionado não encontrado na sessão");
     }
   }
 
@@ -207,12 +210,12 @@ export class DelpSessions {
     let session = this.getSession(sender.key);
 
     if (session == undefined) {
-      throw new Error("Sessão informada é inválida");
+      throw new CustomError("Sessão informada é inválida");
     } else if (session.getCreator() != sender) {
-      throw new Error("Usuário não possui acesso a esta funcionalidade");
+      throw new CustomError("Usuário não possui acesso a esta funcionalidade");
     } else {
       this.getSession(sender.key)?.deleteClients(sender);
-      this.closeSession(sender);
+      this.getSession(sender.key)?.setState(SESSION.CLOSED);
     }
   }
 
