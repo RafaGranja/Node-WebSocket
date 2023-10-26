@@ -93,6 +93,14 @@ class Clients {
     this.clients.delete(ws);
   }
 
+  public removeClientLogin(login: string,key_session:string) {
+    this.clients.forEach((value:Client,key:any)=>{
+      if(value.login==login && value.key==key_session){
+        this.clients.delete(key)
+      }
+    })
+  }
+
   public getClient(ws: any) {
     return this.clients.get(ws);
   }

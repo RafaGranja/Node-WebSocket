@@ -15,7 +15,10 @@ import { CustomError } from "../class/Error/customError";
 
 //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
 function onClose(cli: Client) {
-  Clients.getInstance().removeClient(cli);
+  Clients.getInstance().removeClientLogin(cli.login,cli.key);
+  if(cli.key!=''){
+    DelpSessions.getInstance().getSession(cli.key)?.deleteClientMap(cli);
+  }
   logger.info(`onClose: ${cli}`);
 }
 

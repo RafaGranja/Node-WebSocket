@@ -56,7 +56,7 @@ export class DelpSessions {
     cli.ws.on("error", (error: any) => this.onError(cli, error));
     cli.ws.on("close", () => this.onClose(cli));
     this.sessions.get(cli.key)?.addClient(cli);
-    Clients.getInstance().addClient(cli.ws, cli);
+    Clients.getInstance().removeClient(cli.ws);
     const note = new NotificationSession(
       cli,
       new Note(
