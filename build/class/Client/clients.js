@@ -10,6 +10,7 @@ class Client {
         this.login = login;
         this.name = name;
         this.key = key;
+        this.time = new Date();
     }
     toJSON() {
         return { login: this.login, name: this.name, key: this.key };
@@ -21,6 +22,7 @@ class SessionClients {
         this.clients = new Map();
     }
     addClient(ws, cli) {
+        cli.time = new Date();
         this.clients.set(ws, cli);
     }
     removeClient(ws) {
@@ -28,7 +30,8 @@ class SessionClients {
         this.clients.delete(ws.ws);
         (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
             action: "deleteClient",
-            content: ws.login,
+            content: this.clients.size,
+            client: ws.toJSON()
         }), "Sucesso"));
         if (!((_b = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _b === void 0 ? void 0 : _b.getClients().getClients().size)) {
             controlSessions_1.DelpSessions.getInstance().getSessions().delete(ws.key);
@@ -62,6 +65,7 @@ class Clients {
         this.clients = new Map();
     }
     addClient(ws, cli) {
+        cli.time = new Date();
         this.clients.set(ws, cli);
     }
     removeClient(ws) {

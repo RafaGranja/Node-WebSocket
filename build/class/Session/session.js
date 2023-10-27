@@ -29,6 +29,9 @@ class DelpSession {
     }
     deleteClient(cli) {
         this.clients.removeClient(cli);
+        if (this.getCreator() == cli) {
+            this.setCreator(Array.from(this.getClients().getClients().values()).sort((a, b) => { return Number(a.time <= b.time); })[0]);
+        }
         cli.ws.close();
     }
     deleteClientMap(cli) {
@@ -54,12 +57,14 @@ class DelpSession {
     }
     addClient(cli) {
         this.clients.addClient(cli.ws, cli);
+        this.notifyAll(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "addClient", content: this.getClients().getClients().size, client: cli.toJSON() }), "Sucesso"));
     }
     getCreator() {
         return this.creator;
     }
     setCreator(cli) {
         this.creator = cli;
+        this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "newCreator", content: this.getClients().getClients().size, client: cli.toJSON() }), "Sucesso"));
     }
     getState() {
         return this.state;
