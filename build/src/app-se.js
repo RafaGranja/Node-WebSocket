@@ -8,6 +8,7 @@ const notification_1 = require("../class/Notification/notification");
 const consts_1 = require("../class/Consts/consts");
 const notificationService_1 = require("../class/Notification/notificationService");
 const app_ws_1 = require("./app-ws");
+const customError_1 = require("../class/Error/customError");
 function initSession(key, cli) {
     var _a;
     if (key == undefined || key == null || key == "") {
@@ -21,7 +22,7 @@ function initSession(key, cli) {
         cli = new clients_1.Client(cli.ws, cli.login, cli.name, key);
         if (controlSessions_1.DelpSessions.getInstance().hasSession(key)) {
             if (((_a = controlSessions_1.DelpSessions.getInstance().getSession(key)) === null || _a === void 0 ? void 0 : _a.getState()) == consts_1.SESSION.CLOSED) {
-                throw new Error("Sessão está fechada para entrada de novos usuários");
+                throw new customError_1.CustomError("Sessão está fechada para entrada de novos usuários", 1);
             }
             else {
                 controlSessions_1.DelpSessions.getInstance().addClient(cli);

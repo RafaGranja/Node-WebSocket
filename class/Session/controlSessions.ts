@@ -11,6 +11,7 @@ import { logger } from "../../src/log";
 import { validaValor } from "../Utils/utils";
 import { json } from "stream/consumers";
 import { CustomError } from "../Error/customError";
+import { autenticate } from "../../src/app-se";
 
 export class DelpSessions {
   private sessions: Map<string, DelpSession>;
@@ -181,6 +182,13 @@ export class DelpSessions {
       const note = new NotificationError(cli, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
+  }
+
+  public disconnectSession(cli : Client){
+    this.getSession(cli.key)?.deleteClientMap(cli);
+    Clients.getInstance().removeClient(cli)
+    cli.key='';
+    autenticate(cli.ws,cli.login,cli.name)
   }
 
   private statusSession(state: number, sender: Client) {

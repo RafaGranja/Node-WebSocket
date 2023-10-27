@@ -28,11 +28,11 @@ class DelpSession {
         return this.clients;
     }
     deleteClient(cli) {
-        this.clients.removeClient(cli.ws);
+        this.clients.removeClient(cli);
         cli.ws.close();
     }
     deleteClientMap(cli) {
-        this.clients.removeClient(cli.ws);
+        this.clients.removeClient(cli);
     }
     deleteClients(sender) {
         this.clients.getClients().forEach((cli) => {
@@ -46,7 +46,7 @@ class DelpSession {
     }
     constructor(key, cli) {
         this.key = key;
-        this.clients = new clients_1.SessionCLients();
+        this.clients = new clients_1.SessionClients();
         this.clients.addClient(cli.ws, cli);
         this.opentime = new Date();
         this.creator = cli;

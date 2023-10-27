@@ -7,6 +7,8 @@ const notification_1 = require("../Notification/notification");
 const notificationService_1 = require("../Notification/notificationService");
 const log_1 = require("../../src/log");
 const utils_1 = require("../Utils/utils");
+const customError_1 = require("../Error/customError");
+const app_se_1 = require("../../src/app-se");
 class DelpSessions {
     constructor() {
         this.sessions = new Map();
@@ -20,12 +22,12 @@ class DelpSessions {
     onClose(cli) {
         var _a;
         (_a = this.sessions.get(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
-        clients_1.Clients.getInstance().removeClient(cli.ws);
+        clients_1.Clients.getInstance().removeClient(cli);
         log_1.logger.info(`onClose: ${cli}`);
     }
     onError(cli, err) {
         log_1.logger.error(`onError:${cli.ws}, message:${err.message}`);
-        const note = new notification_1.NotificationError(cli, err);
+        const note = new notification_1.NotificationError(cli, err, 0);
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     onMessage(cli, data) {
@@ -38,7 +40,7 @@ class DelpSessions {
         cli.ws.on("error", (error) => this.onError(cli, error));
         cli.ws.on("close", () => this.onClose(cli));
         (_a = this.sessions.get(cli.key)) === null || _a === void 0 ? void 0 : _a.addClient(cli);
-        clients_1.Clients.getInstance().addClient(cli.ws, cli);
+        clients_1.Clients.getInstance().removeClient(cli.ws);
         const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
             content: `Conexão estabelecida com a sessão ${cli.key}`,
             action: "initSession",
@@ -79,7 +81,7 @@ class DelpSessions {
         notificationService_1.NotificationService.getInstance().addNotification(note);
         try {
             if (!(0, utils_1.validaValor)(jsonObject.action)) {
-                throw Error("action informado não é válido");
+                throw new customError_1.CustomError("action informado não é válido", 1);
             }
             else {
                 switch (jsonObject.action) {
@@ -92,7 +94,7 @@ class DelpSessions {
                         break;
                     case "statusSession":
                         if (!(0, utils_1.validaValor)(jsonObject.state)) {
-                            throw new Error("Necessário informar um estado para sessão");
+                            throw new customError_1.CustomError("Necessário informar um estado para sessão", 0);
                         }
                         else {
                             this.statusSession(jsonObject.state, cli);
@@ -113,24 +115,37 @@ class DelpSessions {
                     case "returnClients":
                         this.returnClients(cli);
                         break;
+                    case "disconnectSession":
+                        this.disconnectSession(cli);
+                        break;
                     default:
-                        throw Error("action informado - " + jsonObject.action + " - não é válido");
+                        throw Error(JSON.stringify({
+                            message: "action informado - " + jsonObject.action + " - não é válido", critical: 1
+                        }));
                 }
             }
         }
         catch (e) {
-            const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message);
+            e = JSON.parse(e);
+            const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
+    }
+    disconnectSession(cli) {
+        var _a;
+        (_a = this.getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
+        clients_1.Clients.getInstance().removeClient(cli);
+        cli.key = '';
+        (0, app_se_1.autenticate)(cli.ws, cli.login, cli.name);
     }
     statusSession(state, sender) {
         var _a;
         let session = this.getSession(sender.key);
         if (session == undefined) {
-            throw new Error("Sessão informada é inválida");
+            throw new customError_1.CustomError("Sessão informada é inválida", 0);
         }
         else if (session.getCreator() != sender) {
-            throw new Error("Usuário não possui acesso a esta funcionalidade");
+            throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade", 0);
         }
         else {
             (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.setState(state);
@@ -144,25 +159,25 @@ class DelpSessions {
                 (_b = this.getSession(sender.key)) === null || _b === void 0 ? void 0 : _b.deleteClient(cli_obj);
             }
             else {
-                throw new Error("Usuário não possui permissão para a ação");
+                throw new customError_1.CustomError("Usuário não possui permissão para a ação");
             }
         }
         else {
-            throw new Error("Usuário selecionado não encontrado na sessão");
+            throw new customError_1.CustomError("Usuário selecionado não encontrado na sessão");
         }
     }
     lockSession(sender) {
-        var _a;
+        var _a, _b;
         let session = this.getSession(sender.key);
         if (session == undefined) {
-            throw new Error("Sessão informada é inválida");
+            throw new customError_1.CustomError("Sessão informada é inválida");
         }
         else if (session.getCreator() != sender) {
-            throw new Error("Usuário não possui acesso a esta funcionalidade");
+            throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade");
         }
         else {
             (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.deleteClients(sender);
-            this.closeSession(sender);
+            (_b = this.getSession(sender.key)) === null || _b === void 0 ? void 0 : _b.setState(consts_1.SESSION.CLOSED);
         }
     }
     closeSession(sender) {

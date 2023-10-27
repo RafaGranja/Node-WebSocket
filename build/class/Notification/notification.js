@@ -32,8 +32,8 @@ class NotificationSession {
 }
 exports.NotificationSession = NotificationSession;
 class NotificationError extends NotificationSession {
-    constructor(destiny, note, sender = clients_1.DefaultClient) {
-        super(destiny, new Note(consts_1.STATUS.ERROR, consts_1.TYPE.ERROR, JSON.stringify({ content: note, action: "error" }), "Error"), sender);
+    constructor(destiny, note, critical, sender = clients_1.DefaultClient) {
+        super(destiny, new Note(consts_1.STATUS.ERROR, consts_1.TYPE.ERROR, JSON.stringify({ content: note, action: "error", critical: critical }), "Error"), sender);
     }
 }
 exports.NotificationError = NotificationError;

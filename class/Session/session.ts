@@ -1,11 +1,11 @@
-import { Client, DefaultClient, SessionCLients } from "../Client/clients";
+import { Client, DefaultClient, SessionClients } from "../Client/clients";
 import { SESSION, STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
 import { DelpSessions } from "./controlSessions";
 
 export class DelpSession {
-  public clients: SessionCLients;
+  public clients: SessionClients;
   public key: string;
   private opentime: Date;
   private creator: Client;
@@ -62,7 +62,7 @@ export class DelpSession {
 
   constructor(key: string, cli: Client) {
     this.key = key;
-    this.clients = new SessionCLients();
+    this.clients = new SessionClients();
     this.clients.addClient(cli.ws, cli);
     this.opentime = new Date();
     this.creator = cli;

@@ -10,14 +10,19 @@ const notification_1 = require("../class/Notification/notification");
 const notificationService_1 = require("../class/Notification/notificationService");
 const utils_1 = require("../class/Utils/utils");
 const controlSessions_1 = require("../class/Session/controlSessions");
+const customError_1 = require("../class/Error/customError");
 function onClose(cli) {
-    clients_1.Clients.getInstance().removeClient(cli);
+    var _a;
+    clients_1.Clients.getInstance().removeClientLogin(cli.login, cli.key);
+    if (cli.key != '') {
+        (_a = controlSessions_1.DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
+    }
     log_1.logger.info(`onClose: ${cli}`);
 }
 exports.onClose = onClose;
 function onError(cli, err) {
     log_1.logger.error(`onError:${cli}, message:${err.message}`);
-    const note = new notification_1.NotificationError(cli, err.message);
+    const note = new notification_1.NotificationError(cli, err.message, 0);
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 exports.onError = onError;
@@ -30,7 +35,7 @@ function onMessage(cli, data) {
         let cli_aux = clients_1.Clients.getInstance().getClient(cli.ws);
         cli = cli_aux == undefined ? cli : cli_aux;
         if (!(0, utils_1.validaValor)(jsonObject.action)) {
-            throw Error("action informado não é válido");
+            throw new customError_1.CustomError("action informado não é válido", 1);
         }
         else {
             switch (jsonObject.action) {
@@ -39,10 +44,10 @@ function onMessage(cli, data) {
                     break;
                 case "autenticate":
                     if (!(0, utils_1.validaValor)(jsonObject.name)) {
-                        throw Error("name informado não é válido");
+                        throw new customError_1.CustomError("name informado não é válido", 1);
                     }
                     else if (!(0, utils_1.validaValor)(jsonObject.login)) {
-                        throw Error("login informado não é válido");
+                        throw new customError_1.CustomError("login informado não é válido", 1);
                     }
                     else {
                         (0, app_se_1.autenticate)(cli.ws, jsonObject.login, jsonObject.name);
@@ -53,13 +58,13 @@ function onMessage(cli, data) {
                     if (cli == undefined ||
                         cli == null ||
                         cli.login == clients_1.DefaultClient.login) {
-                        throw Error("Necessária autenticação prévia");
+                        throw new customError_1.CustomError("Necessária autenticação prévia", 1);
                     }
                     else if (!(0, utils_1.validaValor)(cli.name)) {
-                        throw Error("name informado não é válido");
+                        throw new customError_1.CustomError("name informado não é válido", 1);
                     }
                     else if (!(0, utils_1.validaValor)(cli.login)) {
-                        throw Error("login informado não é válido");
+                        throw new customError_1.CustomError("login informado não é válido", 1);
                     }
                     else {
                         (0, app_se_1.initSession)(jsonObject.key, cli);
@@ -72,12 +77,13 @@ function onMessage(cli, data) {
                     returnClients(cli);
                     break;
                 default:
-                    throw Error("action informado não é válido");
+                    throw new customError_1.CustomError("action informado não é válido", 1);
             }
         }
     }
     catch (e) {
-        const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message);
+        e = JSON.parse(e);
+        const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
 }

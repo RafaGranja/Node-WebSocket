@@ -28,7 +28,7 @@ class Client {
   }
 }
 
-class SessionCLients {
+class SessionClients {
   private clients: Map<any, Client>;
 
   constructor() {
@@ -49,6 +49,10 @@ class SessionCLients {
         client : ws.toJSON()
       }),
       "Sucesso"))
+
+    if(!DelpSessions.getInstance().getSession(ws.key)?.getClients().getClients().size){
+      DelpSessions.getInstance().getSessions().delete(ws.key);
+    } 
   }
 
   public getClient(ws: any) {
@@ -128,4 +132,4 @@ class Clients {
 
 const DefaultClient = new Client();
 
-export { SessionCLients, Clients, Client, DefaultClient };
+export { SessionClients, Clients, Client, DefaultClient };

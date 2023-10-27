@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DefaultClient = exports.Client = exports.Clients = exports.SessionCLients = void 0;
+exports.DefaultClient = exports.Client = exports.Clients = exports.SessionClients = void 0;
+const consts_1 = require("../Consts/consts");
+const notification_1 = require("../Notification/notification");
+const controlSessions_1 = require("../Session/controlSessions");
 class Client {
     constructor(ws = null, login = "Servidor", name = "Delp", key = "") {
         this.ws = ws;
@@ -13,7 +16,7 @@ class Client {
     }
 }
 exports.Client = Client;
-class SessionCLients {
+class SessionClients {
     constructor() {
         this.clients = new Map();
     }
@@ -21,7 +24,15 @@ class SessionCLients {
         this.clients.set(ws, cli);
     }
     removeClient(ws) {
-        this.clients.delete(ws);
+        var _a, _b;
+        this.clients.delete(ws.ws);
+        (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
+            action: "deleteClient",
+            content: ws.login,
+        }), "Sucesso"));
+        if (!((_b = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _b === void 0 ? void 0 : _b.getClients().getClients().size)) {
+            controlSessions_1.DelpSessions.getInstance().getSessions().delete(ws.key);
+        }
     }
     getClient(ws) {
         return this.clients.get(ws);
@@ -39,7 +50,7 @@ class SessionCLients {
         return JSON.stringify(ret);
     }
 }
-exports.SessionCLients = SessionCLients;
+exports.SessionClients = SessionClients;
 class Clients {
     static getInstance() {
         if (!Clients.instance) {
@@ -55,6 +66,13 @@ class Clients {
     }
     removeClient(ws) {
         this.clients.delete(ws);
+    }
+    removeClientLogin(login, key_session) {
+        this.clients.forEach((value, key) => {
+            if (value.login == login && value.key == key_session) {
+                this.clients.delete(key);
+            }
+        });
     }
     getClient(ws) {
         return this.clients.get(ws);
