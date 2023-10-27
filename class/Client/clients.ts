@@ -8,6 +8,7 @@ class Client {
   public name: string;
   public ws: any;
   public key: any;
+  public time : Date;
 
   constructor(
     ws: any = null,
@@ -19,6 +20,7 @@ class Client {
     this.login = login;
     this.name = name;
     this.key = key;
+    this.time = new Date()
   }
 
   toJSON() {
@@ -34,6 +36,7 @@ class SessionCLients {
   }
 
   public addClient(ws: any, cli: Client) {
+    cli.time= new Date();
     this.clients.set(ws, cli);
   }
 
@@ -42,7 +45,8 @@ class SessionCLients {
     DelpSessions.getInstance().getSession(ws.key)?.notifyAll(ws,new Note(STATUS.OK,TYPE.INFO,
       JSON.stringify({
         action: "deleteClient",
-        content: ws.login,
+        content: this.clients.size,
+        client : ws.toJSON()
       }),
       "Sucesso"))
   }
@@ -86,6 +90,7 @@ class Clients {
   }
 
   public addClient(ws: any, cli: Client) {
+    cli.time= new Date();
     this.clients.set(ws, cli);
   }
 

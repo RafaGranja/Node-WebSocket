@@ -1,7 +1,8 @@
-import { Client, SessionCLients } from "../Client/clients";
-import { SESSION } from "../Consts/consts";
+import { Client, DefaultClient, SessionCLients } from "../Client/clients";
+import { SESSION, STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
+import { DelpSessions } from "./controlSessions";
 
 export class DelpSession {
   public clients: SessionCLients;
@@ -37,8 +38,10 @@ export class DelpSession {
 
   public deleteClient(cli: Client) {
     this.clients.removeClient(cli);
+    if(this.getCreator()==cli){
+      this.setCreator(Array.from(this.getClients().getClients().values()).sort((a,b)=>{return Number(a.time<=b.time)})[0])
+    }
     cli.ws.close();
-
   }
 
   public deleteClientMap(cli: Client) {
@@ -68,6 +71,12 @@ export class DelpSession {
 
   public addClient(cli: Client) {
     this.clients.addClient(cli.ws, cli);
+    this.notifyAll(cli,new Note(
+      STATUS.WAIT,
+      TYPE.INFO,
+      JSON.stringify({ action: "addClient", content: this.getClients().getClients().size, client : cli.toJSON() }),
+      "Sucesso"
+    ))
   }
 
   public getCreator() {
@@ -76,6 +85,12 @@ export class DelpSession {
 
   public setCreator(cli: Client) {
     this.creator = cli;
+    this.notifyAll(DefaultClient,new Note(
+      STATUS.WAIT,
+      TYPE.INFO,
+      JSON.stringify({ action: "newCreator", content: this.getClients().getClients().size, client : cli.toJSON() }),
+      "Sucesso"
+    ))
   }
 
   public getState() {
