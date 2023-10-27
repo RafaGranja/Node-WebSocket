@@ -168,6 +168,8 @@ export class DelpSessions {
           case "returnClients":
             this.returnClients(cli);
             break;
+          case "openSession":
+            this.openSession(cli);
           default:
             throw Error(JSON.stringify({
               message:"action informado - " + jsonObject.action + " - não é válido",critical:1
@@ -217,6 +219,18 @@ export class DelpSessions {
     } else {
       this.getSession(sender.key)?.deleteClients(sender);
       this.getSession(sender.key)?.setState(SESSION.CLOSED);
+    }
+  }
+
+  private openSession(sender : Client){
+    let session = this.getSession(sender.key);
+
+    if (session == undefined) {
+      throw new CustomError("Sessão informada é inválida");
+    } else if (session.getCreator() != sender) {
+      throw new CustomError("Usuário não possui acesso a esta funcionalidade");
+    } else {
+      this.getSession(sender.key)?.setState(SESSION.OPEN);
     }
   }
 

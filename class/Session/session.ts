@@ -99,5 +99,21 @@ export class DelpSession {
 
   public setState(state: number) {
     this.state = state;
+    if(state==SESSION.OPEN){
+      this.notifyAll(DefaultClient,new Note(
+        STATUS.OK,
+        TYPE.INFO,
+        JSON.stringify({ action: "openSession", content: this.getClients().getClients().size, client : this.creator.toJSON() }),
+        "Sucesso"
+      ))
+    }
+    else if(state==SESSION.CLOSED){
+      this.notifyAll(DefaultClient,new Note(
+        STATUS.OK,
+        TYPE.INFO,
+        JSON.stringify({ action: "lockSession", content: this.getClients().getClients().size, client : this.creator.toJSON() }),
+        "Sucesso"
+      ))
+    }
   }
 }
