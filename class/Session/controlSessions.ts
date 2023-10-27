@@ -65,6 +65,7 @@ export class DelpSessions {
         JSON.stringify({
           content: `Conexão estabelecida com a sessão ${cli.key}`,
           action: "initSession",
+          creator:this.sessions.get(cli.key)?.getCreator().login
         }),
         "Sucesso"
       )
