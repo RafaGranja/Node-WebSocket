@@ -24,18 +24,20 @@ class DelpSessions {
         (_a = this.sessions.get(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
         clients_1.Clients.getInstance().removeClient(cli);
         log_1.logger.info(`onClose: ${cli}`);
+        log_1.logger.error(`onClose: ${cli}`);
     }
     onError(cli, err) {
         log_1.logger.error(`onError:${cli.ws}, message:${err.message}`);
         const note = new notification_1.NotificationError(cli, err, 0);
         notificationService_1.NotificationService.getInstance().addNotification(note);
+        log_1.logger.info(`onError:${cli.ws}, message:${err.message}`);
     }
     onMessage(cli, data) {
         let jsonObject = JSON.parse(data);
         this.processAction(jsonObject, cli);
     }
     addClient(cli) {
-        var _a;
+        var _a, _b;
         cli.ws.on("message", (data) => this.onMessage(cli, data));
         cli.ws.on("error", (error) => this.onError(cli, error));
         cli.ws.on("close", () => this.onClose(cli));
@@ -44,6 +46,7 @@ class DelpSessions {
         const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
             content: `Conexão estabelecida com a sessão ${cli.key}`,
             action: "initSession",
+            creator: (_b = this.sessions.get(cli.key)) === null || _b === void 0 ? void 0 : _b.getCreator().login
         }), "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
@@ -118,6 +121,12 @@ class DelpSessions {
                     case "disconnectSession":
                         this.disconnectSession(cli);
                         break;
+                    case "openSession":
+                        this.openSession(cli);
+                        break;
+                    case "setCreator":
+                        this.setCreator(cli, jsonObject.login);
+                        break;
                     default:
                         throw Error(JSON.stringify({
                             message: "action informado - " + jsonObject.action + " - não é válido", critical: 1
@@ -126,7 +135,24 @@ class DelpSessions {
             }
         }
         catch (e) {
-            e = JSON.parse(e);
+            log_1.logger.error(`onError:${cli.ws}, message:${e.message}`);
+            const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
+            notificationService_1.NotificationService.getInstance().addNotification(note);
+        }
+    }
+    setCreator(cli, login) {
+        var _a, _b, _c;
+        let creator = (_a = this.getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClientByLogin(login);
+        try {
+            if (creator != undefined && cli.login == ((_b = this.getSession(cli.key)) === null || _b === void 0 ? void 0 : _b.getCreator().login)) {
+                (_c = this.getSession(cli.key)) === null || _c === void 0 ? void 0 : _c.setCreator(creator);
+            }
+            else {
+                throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade", 0);
+            }
+        }
+        catch (e) {
+            log_1.logger.error(`onError:${cli.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
@@ -141,43 +167,89 @@ class DelpSessions {
     statusSession(state, sender) {
         var _a;
         let session = this.getSession(sender.key);
-        if (session == undefined) {
-            throw new customError_1.CustomError("Sessão informada é inválida", 0);
+        try {
+            if (session == undefined) {
+                throw new customError_1.CustomError("Sessão informada é inválida", 0);
+            }
+            else if (session.getCreator().login != sender.login) {
+                throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade", 0);
+            }
+            else {
+                (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.setState(state);
+            }
         }
-        else if (session.getCreator() != sender) {
-            throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade", 0);
-        }
-        else {
-            (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.setState(state);
+        catch (e) {
+            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
+            notificationService_1.NotificationService.getInstance().addNotification(note);
         }
     }
     deleteClient(sender, cli) {
         var _a, _b;
         let cli_obj = this.getClientByLogin(sender.key, cli);
-        if (cli_obj != undefined && cli_obj != null) {
-            if (sender != ((_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.getCreator())) {
-                (_b = this.getSession(sender.key)) === null || _b === void 0 ? void 0 : _b.deleteClient(cli_obj);
+        try {
+            if (cli_obj != undefined && cli_obj != null) {
+                if (sender.login == ((_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.getCreator().login)) {
+                    if (sender.login != cli) {
+                        (_b = this.getSession(sender.key)) === null || _b === void 0 ? void 0 : _b.deleteClient(cli_obj);
+                    }
+                    else {
+                        throw new customError_1.CustomError("Usuário não pode se desconectar");
+                    }
+                }
+                else {
+                    throw new customError_1.CustomError("Usuário não possui permissão para a ação");
+                }
             }
             else {
-                throw new customError_1.CustomError("Usuário não possui permissão para a ação");
+                throw new customError_1.CustomError("Usuário selecionado não encontrado na sessão");
             }
         }
-        else {
-            throw new customError_1.CustomError("Usuário selecionado não encontrado na sessão");
+        catch (e) {
+            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
+            notificationService_1.NotificationService.getInstance().addNotification(note);
         }
     }
     lockSession(sender) {
         var _a, _b;
         let session = this.getSession(sender.key);
-        if (session == undefined) {
-            throw new customError_1.CustomError("Sessão informada é inválida");
+        try {
+            if (session == undefined) {
+                throw new customError_1.CustomError("Sessão informada é inválida");
+            }
+            else if (session.getCreator().login != sender.login) {
+                throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade");
+            }
+            else {
+                (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.deleteClients(sender);
+                (_b = this.getSession(sender.key)) === null || _b === void 0 ? void 0 : _b.setState(consts_1.SESSION.CLOSED);
+            }
         }
-        else if (session.getCreator() != sender) {
-            throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade");
+        catch (e) {
+            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
+            notificationService_1.NotificationService.getInstance().addNotification(note);
         }
-        else {
-            (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.deleteClients(sender);
-            (_b = this.getSession(sender.key)) === null || _b === void 0 ? void 0 : _b.setState(consts_1.SESSION.CLOSED);
+    }
+    openSession(sender) {
+        var _a;
+        let session = this.getSession(sender.key);
+        try {
+            if (session == undefined) {
+                throw new customError_1.CustomError("Sessão informada é inválida");
+            }
+            else if (session.getCreator().login != sender.login) {
+                throw new customError_1.CustomError("Usuário não possui acesso a esta funcionalidade");
+            }
+            else {
+                (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.setState(consts_1.SESSION.OPEN);
+            }
+        }
+        catch (e) {
+            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
+            notificationService_1.NotificationService.getInstance().addNotification(note);
         }
     }
     closeSession(sender) {

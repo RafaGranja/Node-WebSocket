@@ -45,7 +45,7 @@ export class NotificationService {
 
         current_note.send();
       }
-    }, 50);
+    },10);
   }
 
   //PARALIZA PROCESSAMENTO DA FILA

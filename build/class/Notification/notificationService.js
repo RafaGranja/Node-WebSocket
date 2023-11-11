@@ -28,7 +28,7 @@ class NotificationService {
                 }
                 current_note.send();
             }
-        }, 50);
+        }, 10);
     }
     stop() {
         if (!this.running) {

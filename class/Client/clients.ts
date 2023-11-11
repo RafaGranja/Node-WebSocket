@@ -1,3 +1,4 @@
+import { logger } from "../../src/log";
 import { STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
@@ -48,11 +49,20 @@ class SessionClients {
         content: this.clients.size,
         client : ws.toJSON()
       }),
-      "Sucesso"))
+      "Sucesso")
+    )
 
     if(!DelpSessions.getInstance().getSession(ws.key)?.getClients().getClients().size){
       DelpSessions.getInstance().getSessions().delete(ws.key);
     } 
+    else if(DelpSessions.getInstance().getSession(ws.key)?.getCreator()==ws){
+      let array = Array.from(this.clients.values())
+      array.sort((a,b)=>{return Number(a.time<=b.time)})
+      logger.info("Array creator",array)
+      DelpSessions.getInstance().getSession(ws.key)?.setCreator(
+        array[0]
+      )
+    }
   }
 
   public getClient(ws: any) {

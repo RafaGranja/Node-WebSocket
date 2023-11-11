@@ -82,7 +82,6 @@ function onMessage(cli, data) {
         }
     }
     catch (e) {
-        e = JSON.parse(e);
         const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }

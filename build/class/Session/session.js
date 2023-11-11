@@ -18,28 +18,27 @@ class DelpSession {
         return this.clients.getClient(ws);
     }
     getClientByLogin(login) {
-        this.clients.getClients().forEach(function (cli) {
+        let ret = undefined;
+        this.clients.getClients().forEach((cli) => {
             if (login == cli.login) {
-                return cli;
+                ret = cli;
             }
         });
+        return ret;
     }
     getClients() {
         return this.clients;
     }
     deleteClient(cli) {
         this.clients.removeClient(cli);
-        if (this.getCreator() == cli) {
-            this.setCreator(Array.from(this.getClients().getClients().values()).sort((a, b) => { return Number(a.time <= b.time); })[0]);
-        }
-        cli.ws.close();
+        cli.ws.terminate();
     }
     deleteClientMap(cli) {
         this.clients.removeClient(cli);
     }
     deleteClients(sender) {
         this.clients.getClients().forEach((cli) => {
-            if (sender != cli) {
+            if ((sender === null || sender === void 0 ? void 0 : sender.login) != cli.login) {
                 this.deleteClient(cli);
             }
         });
@@ -71,6 +70,12 @@ class DelpSession {
     }
     setState(state) {
         this.state = state;
+        if (state == consts_1.SESSION.OPEN) {
+            this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({ action: "openSession", content: this.getClients().getClients().size, client: this.creator.toJSON() }), "Sucesso"));
+        }
+        else if (state == consts_1.SESSION.CLOSED) {
+            this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({ action: "lockSession", content: this.getClients().getClients().size, client: this.creator.toJSON() }), "Sucesso"));
+        }
     }
 }
 exports.DelpSession = DelpSession;

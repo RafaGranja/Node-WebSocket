@@ -25,11 +25,14 @@ export class DelpSession {
   }
 
   public getClientByLogin(login: string) {
-    this.clients.getClients().forEach(function (cli) {
+    let ret : any = undefined;
+    this.clients.getClients().forEach((cli)=>{
       if (login == cli.login) {
-        return cli;
+        ret = cli;
       }
     });
+
+    return ret;
   }
 
   public getClients() {
@@ -38,10 +41,7 @@ export class DelpSession {
 
   public deleteClient(cli: Client) {
     this.clients.removeClient(cli);
-    if(this.getCreator()==cli){
-      this.setCreator(Array.from(this.getClients().getClients().values()).sort((a,b)=>{return Number(a.time<=b.time)})[0])
-    }
-    cli.ws.close();
+    cli.ws.terminate();
   }
 
   public deleteClientMap(cli: Client) {
@@ -50,7 +50,7 @@ export class DelpSession {
 
   public deleteClients(sender?: Client) {
     this.clients.getClients().forEach((cli) => {
-      if (sender != cli) {
+      if (sender?.login != cli.login) {
         this.deleteClient(cli);
       }
     });
