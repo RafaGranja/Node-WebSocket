@@ -1,11 +1,11 @@
-import { Client, DefaultClient, SessionCLients } from "../Client/clients";
+import { Client, DefaultClient, SessionClients } from "../Client/clients";
 import { SESSION, STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
 import { DelpSessions } from "./controlSessions";
 
 export class DelpSession {
-  public clients: SessionCLients;
+  public clients: SessionClients;
   public key: string;
   private opentime: Date;
   private creator: Client;
@@ -25,11 +25,14 @@ export class DelpSession {
   }
 
   public getClientByLogin(login: string) {
-    this.clients.getClients().forEach(function (cli) {
+    let ret : any = undefined;
+    this.clients.getClients().forEach((cli)=>{
       if (login == cli.login) {
-        return cli;
+        ret = cli;
       }
     });
+
+    return ret;
   }
 
   public getClients() {
@@ -38,10 +41,7 @@ export class DelpSession {
 
   public deleteClient(cli: Client) {
     this.clients.removeClient(cli);
-    if(this.getCreator()==cli){
-      this.setCreator(Array.from(this.getClients().getClients().values()).sort((a,b)=>{return Number(a.time<=b.time)})[0])
-    }
-    cli.ws.close();
+    cli.ws.terminate();
   }
 
   public deleteClientMap(cli: Client) {
@@ -62,7 +62,7 @@ export class DelpSession {
 
   constructor(key: string, cli: Client) {
     this.key = key;
-    this.clients = new SessionCLients();
+    this.clients = new SessionClients();
     this.clients.addClient(cli.ws, cli);
     this.opentime = new Date();
     this.creator = cli;

@@ -1,6 +1,3 @@
-
-@ECHO OFF
-
 SET SERVICENAME="DelpSessions"
 SET NSSM=%CD%\nssm\win64\nssm.exe
 

@@ -93,7 +93,6 @@ function onMessage(cli: Client, data: any) {
       }
     }
   } catch (e: any) {
-    e = JSON.parse(e);
     const note = new NotificationError(cli, e?.message,e?.critical);
     NotificationService.getInstance().addNotification(note);
   }

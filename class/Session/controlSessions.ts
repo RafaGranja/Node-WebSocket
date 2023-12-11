@@ -11,6 +11,7 @@ import { logger } from "../../src/log";
 import { validaValor } from "../Utils/utils";
 import { json } from "stream/consumers";
 import { CustomError } from "../Error/customError";
+import { autenticate } from "../../src/app-se";
 
 export class DelpSessions {
   private sessions: Map<string, DelpSession>;
@@ -26,7 +27,6 @@ export class DelpSessions {
     if (!DelpSessions.instance) {
       DelpSessions.instance = new DelpSessions();
     }
-
     return DelpSessions.instance;
   }
 
@@ -35,6 +35,7 @@ export class DelpSessions {
     this.sessions.get(cli.key)?.deleteClientMap(cli);
     Clients.getInstance().removeClient(cli);
     logger.info(`onClose: ${cli}`);
+    logger.error(`onClose: ${cli}`);
   }
 
   //MÉTODO QUE É CHAMADO AO OCORRER UM ERRO NO WS-CLIENT
@@ -42,6 +43,7 @@ export class DelpSessions {
     logger.error(`onError:${cli.ws}, message:${err.message}`);
     const note = new NotificationError(cli, err,0);
     NotificationService.getInstance().addNotification(note);
+    logger.info(`onError:${cli.ws}, message:${err.message}`);
   }
 
   //MÉTODO QUE É CHAMADO AO CLIENT ENVIAR UMA MENSAGEM PARA A SESSÃO
@@ -168,8 +170,15 @@ export class DelpSessions {
           case "returnClients":
             this.returnClients(cli);
             break;
+          case "disconnectSession":
+            this.disconnectSession(cli);
+            break;
           case "openSession":
             this.openSession(cli);
+            break;
+          case "setCreator":
+            this.setCreator(cli,jsonObject.login);
+            break;
           default:
             throw Error(JSON.stringify({
               message:"action informado - " + jsonObject.action + " - não é válido",critical:1
@@ -177,60 +186,110 @@ export class DelpSessions {
         }
       }
     } catch (e: any) {
-      e = JSON.parse(e);
+      logger.error(`onError:${cli.ws}, message:${e.message}`);
       const note = new NotificationError(cli, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
   }
 
+  private setCreator(cli : Client,login :string){
+
+    let creator : any = this.getSession(cli.key)?.getClientByLogin(login)
+    try{
+      if(creator!=undefined && cli.login==this.getSession(cli.key)?.getCreator().login){
+        this.getSession(cli.key)?.setCreator(creator)
+      }else{
+        throw new CustomError("Usuário não possui acesso a esta funcionalidade",0);
+      }
+    } catch (e: any) {
+      logger.error(`onError:${cli.ws}, message:${e.message}`);
+      const note = new NotificationError(cli, e?.message,e?.critical);
+      NotificationService.getInstance().addNotification(note);
+    }
+
+  }
+
+  private disconnectSession(cli : Client){
+    this.getSession(cli.key)?.deleteClientMap(cli);
+    Clients.getInstance().removeClient(cli)
+    cli.key='';
+    autenticate(cli.ws,cli.login,cli.name)
+  }
+ 
   private statusSession(state: number, sender: Client) {
     let session = this.getSession(sender.key);
-
-    if (session == undefined) {
-      throw new CustomError("Sessão informada é inválida",0);
-    } else if (session.getCreator() != sender) {
-      throw new CustomError("Usuário não possui acesso a esta funcionalidade",0);
-    } else {
-      this.getSession(sender.key)?.setState(state);
+    try{
+      if (session == undefined) {
+        throw new CustomError("Sessão informada é inválida",0);
+      } else if (session.getCreator().login != sender.login) {
+        throw new CustomError("Usuário não possui acesso a esta funcionalidade",0);
+      } else {
+        this.getSession(sender.key)?.setState(state);
+      }
+    } catch (e: any) {
+      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      const note = new NotificationError(sender, e?.message,e?.critical);
+      NotificationService.getInstance().addNotification(note);
     }
   }
 
   private deleteClient(sender: Client, cli: string) {
     let cli_obj = this.getClientByLogin(sender.key, cli);
-
-    if (cli_obj != undefined && cli_obj != null) {
-      if (sender != this.getSession(sender.key)?.getCreator()) {
-        this.getSession(sender.key)?.deleteClient(cli_obj);
+    try{
+      if (cli_obj != undefined && cli_obj != null) {
+        if (sender.login == this.getSession(sender.key)?.getCreator().login) {
+          if(sender.login!=cli){
+            this.getSession(sender.key)?.deleteClient(cli_obj);
+          }
+          else{
+            throw new CustomError("Usuário não pode se desconectar");
+          }
+        } else {
+          throw new CustomError("Usuário não possui permissão para a ação");
+        }
       } else {
-        throw new CustomError("Usuário não possui permissão para a ação");
+        throw new CustomError("Usuário selecionado não encontrado na sessão");
       }
-    } else {
-      throw new CustomError("Usuário selecionado não encontrado na sessão");
+    }
+    catch (e: any) {
+      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      const note = new NotificationError(sender, e?.message,e?.critical);
+      NotificationService.getInstance().addNotification(note);
     }
   }
 
   private lockSession(sender: Client) {
     let session = this.getSession(sender.key);
-
-    if (session == undefined) {
-      throw new CustomError("Sessão informada é inválida");
-    } else if (session.getCreator() != sender) {
-      throw new CustomError("Usuário não possui acesso a esta funcionalidade");
-    } else {
-      this.getSession(sender.key)?.deleteClients(sender);
-      this.getSession(sender.key)?.setState(SESSION.CLOSED);
+    try{
+      if (session == undefined) {
+        throw new CustomError("Sessão informada é inválida");
+      } else if (session.getCreator().login != sender.login) {
+        throw new CustomError("Usuário não possui acesso a esta funcionalidade");
+      } else {
+        this.getSession(sender.key)?.deleteClients(sender);
+        this.getSession(sender.key)?.setState(SESSION.CLOSED);
+      }
+    } catch (e: any) {
+      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      const note = new NotificationError(sender, e?.message,e?.critical);
+      NotificationService.getInstance().addNotification(note);
     }
   }
 
   private openSession(sender : Client){
     let session = this.getSession(sender.key);
-
-    if (session == undefined) {
-      throw new CustomError("Sessão informada é inválida");
-    } else if (session.getCreator() != sender) {
-      throw new CustomError("Usuário não possui acesso a esta funcionalidade");
-    } else {
-      this.getSession(sender.key)?.setState(SESSION.OPEN);
+    try{
+      if (session == undefined) {
+        throw new CustomError("Sessão informada é inválida");
+      } else if (session.getCreator().login != sender.login) {
+        throw new CustomError("Usuário não possui acesso a esta funcionalidade");
+      } else {
+        this.getSession(sender.key)?.setState(SESSION.OPEN);
+      }
+    } catch (e: any) {
+      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      const note = new NotificationError(sender, e?.message,e?.critical);
+      NotificationService.getInstance().addNotification(note);
     }
   }
 
