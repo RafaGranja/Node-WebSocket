@@ -50,7 +50,7 @@ export class DelpSession {
 
   public deleteClients(sender?: Client) {
     this.clients.getClients().forEach((cli) => {
-      if (sender != cli) {
+      if (sender?.login != cli.login) {
         this.deleteClient(cli);
       }
     });
