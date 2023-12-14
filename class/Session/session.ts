@@ -1,4 +1,4 @@
-import { Client, DefaultClient, SessionClients } from "../Client/clients";
+import { Client, Clients, DefaultClient, SessionClients } from "../Client/clients";
 import { SESSION, STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
@@ -12,7 +12,7 @@ export class DelpSession {
   private state: number;
 
   public notifyAll(sender: Client, note: Note) {
-    this.clients.getClients().forEach(function (cli) {
+    this.clients.getAllClients().forEach(function (cli) {
       if (sender.ws != cli.ws) {
         let not = new NotificationSession(cli, note, sender);
         NotificationService.getInstance().addNotification(not);
@@ -50,7 +50,7 @@ export class DelpSession {
 
   public deleteClients(sender?: Client) {
     this.clients.getClients().forEach((cli) => {
-      if (sender?.login != cli.login) {
+      if (sender?.login != cli.login && !cli.spectate) {
         this.deleteClient(cli);
       }
     });
@@ -65,7 +65,12 @@ export class DelpSession {
     this.clients = new SessionClients();
     this.clients.addClient(cli.ws, cli);
     this.opentime = new Date();
-    this.creator = cli;
+    if(cli.spectate){
+      this.creator= DefaultClient
+    }
+    else{
+      this.creator = cli;
+    }
     this.state = SESSION.OPEN;
   }
 
@@ -77,6 +82,9 @@ export class DelpSession {
       JSON.stringify({ action: "addClient", content: this.getClients().getClients().size, client : cli.toJSON() }),
       "Sucesso"
     ))
+    if(this.creator==DefaultClient && !cli.spectate) {
+      this.setCreator(cli)
+    }
   }
 
   public getCreator() {

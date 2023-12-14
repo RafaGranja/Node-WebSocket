@@ -50,7 +50,7 @@ function onMessage(cli, data) {
                         throw new customError_1.CustomError("login informado não é válido", 1);
                     }
                     else {
-                        (0, app_se_1.autenticate)(cli.ws, jsonObject.login, jsonObject.name);
+                        (0, app_se_1.autenticate)(cli.ws, jsonObject.login, jsonObject.name, jsonObject.spectate.toString());
                     }
                     break;
                 case "initSession":

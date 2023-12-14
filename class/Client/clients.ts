@@ -1,8 +1,11 @@
+import { spec } from "node:test/reporters";
 import { logger } from "../../src/log";
 import { STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
 import { DelpSessions } from "../Session/controlSessions";
+
+
 
 class Client {
   public login: string;
@@ -10,22 +13,25 @@ class Client {
   public ws: any;
   public key: any;
   public time : Date;
+  public spectate : boolean;
 
   constructor(
     ws: any = null,
     login: string = "Servidor",
     name: string = "Delp",
-    key: string = ""
+    key: string = "",
+    spectate : string = "false"
   ) {
     this.ws = ws;
     this.login = login;
     this.name = name;
     this.key = key;
     this.time = new Date()
+    this.spectate = spectate == 'false' ? false : true;
   }
 
   toJSON() {
-    return { login: this.login, name: this.name, key: this.key };
+    return { login: this.login, name: this.name, key: this.key, spectate:this.spectate };
   }
 }
 
@@ -52,16 +58,24 @@ class SessionClients {
       "Sucesso")
     )
 
-    if(!DelpSessions.getInstance().getSession(ws.key)?.getClients().getClients().size){
+    if(!DelpSessions.getInstance().getSession(ws.key)?.getClients().getAllClients().size){
       DelpSessions.getInstance().getSessions().delete(ws.key);
     } 
     else if(DelpSessions.getInstance().getSession(ws.key)?.getCreator()==ws){
       let array = Array.from(this.clients.values())
-      array.sort((a,b)=>{return Number(a.time<=b.time)})
-      logger.info("Array creator",array)
-      DelpSessions.getInstance().getSession(ws.key)?.setCreator(
-        array[0]
-      )
+      var array_aux = array.filter(function(a){return a.spectate==false})
+      array_aux.sort((a,b)=>{return Number(a.time<=b.time)})
+      if(array_aux.length>0){
+        logger.info("Array creator",array_aux)
+        DelpSessions.getInstance().getSession(ws.key)?.setCreator(
+          array_aux[0]
+        )
+      }
+      else{
+        DelpSessions.getInstance().getSession(ws.key)?.setCreator(
+          DefaultClient
+        )
+      }
     }
   }
 
@@ -69,15 +83,27 @@ class SessionClients {
     return this.clients.get(ws);
   }
 
-  public getClients() {
+  public getAllClients() {
     return this.clients;
+  }
+
+  public getClients() {
+    let ret  = new Map<any, Client>();
+    this.clients.forEach(function(elem){
+      if(!elem.spectate){
+        ret.set(elem.ws,elem)
+      }
+    })
+    return ret;
   }
 
   public toJSON() {
     let ret = new Array();
     let i = 0;
     this.clients.forEach((item) => {
-      ret.push(item.toJSON());
+      if(!item.spectate){
+        ret.push(item.toJSON());
+      }
       i++;
     });
 

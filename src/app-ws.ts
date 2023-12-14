@@ -63,7 +63,7 @@ function onMessage(cli: Client, data: any) {
           } else if (!validaValor(jsonObject.login)) {
             throw new CustomError("login informado não é válido",1);
           } else {
-            autenticate(cli.ws, jsonObject.login, jsonObject.name);
+            autenticate(cli.ws, jsonObject.login, jsonObject.name,jsonObject.spectate.toString());
           }
           break;
         case "initSession":

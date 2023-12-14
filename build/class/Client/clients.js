@@ -6,15 +6,16 @@ const consts_1 = require("../Consts/consts");
 const notification_1 = require("../Notification/notification");
 const controlSessions_1 = require("../Session/controlSessions");
 class Client {
-    constructor(ws = null, login = "Servidor", name = "Delp", key = "") {
+    constructor(ws = null, login = "Servidor", name = "Delp", key = "", spectate = "false") {
         this.ws = ws;
         this.login = login;
         this.name = name;
         this.key = key;
         this.time = new Date();
+        this.spectate = spectate == 'false' ? false : true;
     }
     toJSON() {
-        return { login: this.login, name: this.name, key: this.key };
+        return { login: this.login, name: this.name, key: this.key, spectate: this.spectate };
     }
 }
 exports.Client = Client;
@@ -27,34 +28,51 @@ class SessionClients {
         this.clients.set(ws, cli);
     }
     removeClient(ws) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         this.clients.delete(ws.ws);
         (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
             action: "deleteClient",
             content: this.clients.size,
             client: ws.toJSON()
         }), "Sucesso"));
-        if (!((_b = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _b === void 0 ? void 0 : _b.getClients().getClients().size)) {
+        if (!((_b = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _b === void 0 ? void 0 : _b.getClients().getAllClients().size)) {
             controlSessions_1.DelpSessions.getInstance().getSessions().delete(ws.key);
         }
         else if (((_c = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _c === void 0 ? void 0 : _c.getCreator()) == ws) {
             let array = Array.from(this.clients.values());
-            array.sort((a, b) => { return Number(a.time <= b.time); });
-            log_1.logger.info("Array creator", array);
-            (_d = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _d === void 0 ? void 0 : _d.setCreator(array[0]);
+            var array_aux = array.filter(function (a) { return a.spectate == false; });
+            array_aux.sort((a, b) => { return Number(a.time <= b.time); });
+            if (array_aux.length > 0) {
+                log_1.logger.info("Array creator", array_aux);
+                (_d = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _d === void 0 ? void 0 : _d.setCreator(array_aux[0]);
+            }
+            else {
+                (_e = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _e === void 0 ? void 0 : _e.setCreator(DefaultClient);
+            }
         }
     }
     getClient(ws) {
         return this.clients.get(ws);
     }
-    getClients() {
+    getAllClients() {
         return this.clients;
+    }
+    getClients() {
+        let ret = new Map();
+        this.clients.forEach(function (elem) {
+            if (!elem.spectate) {
+                ret.set(elem.ws, elem);
+            }
+        });
+        return ret;
     }
     toJSON() {
         let ret = new Array();
         let i = 0;
         this.clients.forEach((item) => {
-            ret.push(item.toJSON());
+            if (!item.spectate) {
+                ret.push(item.toJSON());
+            }
             i++;
         });
         return JSON.stringify(ret);

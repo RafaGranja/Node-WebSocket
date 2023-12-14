@@ -196,9 +196,14 @@ export class DelpSessions {
 
     let creator : any = this.getSession(cli.key)?.getClientByLogin(login)
     try{
-      if(creator!=undefined && cli.login==this.getSession(cli.key)?.getCreator().login){
+      
+      if(creator.spectate){
+        throw new CustomError("Usuário selecionado não pode se tornar adiministrador",0);
+      }
+      else if(creator!=undefined && cli.login==this.getSession(cli.key)?.getCreator().login){
         this.getSession(cli.key)?.setCreator(creator)
-      }else{
+      }
+      else{
         throw new CustomError("Usuário não possui acesso a esta funcionalidade",0);
       }
     } catch (e: any) {
@@ -213,7 +218,7 @@ export class DelpSessions {
     this.getSession(cli.key)?.deleteClientMap(cli);
     Clients.getInstance().removeClient(cli)
     cli.key='';
-    autenticate(cli.ws,cli.login,cli.name)
+    autenticate(cli.ws,cli.login,cli.name,cli.spectate.toString())
   }
  
   private statusSession(state: number, sender: Client) {

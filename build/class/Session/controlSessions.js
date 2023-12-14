@@ -144,7 +144,10 @@ class DelpSessions {
         var _a, _b, _c;
         let creator = (_a = this.getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClientByLogin(login);
         try {
-            if (creator != undefined && cli.login == ((_b = this.getSession(cli.key)) === null || _b === void 0 ? void 0 : _b.getCreator().login)) {
+            if (creator.spectate) {
+                throw new customError_1.CustomError("Usuário selecionado não pode se tornar adiministrador", 0);
+            }
+            else if (creator != undefined && cli.login == ((_b = this.getSession(cli.key)) === null || _b === void 0 ? void 0 : _b.getCreator().login)) {
                 (_c = this.getSession(cli.key)) === null || _c === void 0 ? void 0 : _c.setCreator(creator);
             }
             else {
@@ -162,7 +165,7 @@ class DelpSessions {
         (_a = this.getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
         clients_1.Clients.getInstance().removeClient(cli);
         cli.key = '';
-        (0, app_se_1.autenticate)(cli.ws, cli.login, cli.name);
+        (0, app_se_1.autenticate)(cli.ws, cli.login, cli.name, cli.spectate.toString());
     }
     statusSession(state, sender) {
         var _a;

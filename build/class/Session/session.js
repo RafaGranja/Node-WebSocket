@@ -7,7 +7,7 @@ const notification_1 = require("../Notification/notification");
 const notificationService_1 = require("../Notification/notificationService");
 class DelpSession {
     notifyAll(sender, note) {
-        this.clients.getClients().forEach(function (cli) {
+        this.clients.getAllClients().forEach(function (cli) {
             if (sender.ws != cli.ws) {
                 let not = new notification_1.NotificationSession(cli, note, sender);
                 notificationService_1.NotificationService.getInstance().addNotification(not);
@@ -38,7 +38,7 @@ class DelpSession {
     }
     deleteClients(sender) {
         this.clients.getClients().forEach((cli) => {
-            if ((sender === null || sender === void 0 ? void 0 : sender.login) != cli.login) {
+            if ((sender === null || sender === void 0 ? void 0 : sender.login) != cli.login && !cli.spectate) {
                 this.deleteClient(cli);
             }
         });
@@ -51,12 +51,20 @@ class DelpSession {
         this.clients = new clients_1.SessionClients();
         this.clients.addClient(cli.ws, cli);
         this.opentime = new Date();
-        this.creator = cli;
+        if (cli.spectate) {
+            this.creator = clients_1.DefaultClient;
+        }
+        else {
+            this.creator = cli;
+        }
         this.state = consts_1.SESSION.OPEN;
     }
     addClient(cli) {
         this.clients.addClient(cli.ws, cli);
         this.notifyAll(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "addClient", content: this.getClients().getClients().size, client: cli.toJSON() }), "Sucesso"));
+        if (this.creator == clients_1.DefaultClient && !cli.spectate) {
+            this.setCreator(cli);
+        }
     }
     getCreator() {
         return this.creator;

@@ -19,9 +19,9 @@ function initSession(key, cli) {
     }
     else {
         cli.ws.removeAllListeners();
-        cli = new clients_1.Client(cli.ws, cli.login, cli.name, key);
+        cli = new clients_1.Client(cli.ws, cli.login, cli.name, key, cli.spectate.toString());
         if (controlSessions_1.DelpSessions.getInstance().hasSession(key)) {
-            if (((_a = controlSessions_1.DelpSessions.getInstance().getSession(key)) === null || _a === void 0 ? void 0 : _a.getState()) == consts_1.SESSION.CLOSED) {
+            if (((_a = controlSessions_1.DelpSessions.getInstance().getSession(key)) === null || _a === void 0 ? void 0 : _a.getState()) == consts_1.SESSION.CLOSED && !cli.spectate) {
                 throw new customError_1.CustomError("Sessão está fechada para entrada de novos usuários", 1);
             }
             else {
@@ -43,12 +43,12 @@ function NotifySession(key, sender = clients_1.DefaultClient, action, type, titl
         .getSession(key)) === null || _a === void 0 ? void 0 : _a.notifyAll(sender, new notification_1.Note(status, type, JSON.stringify({ content: message, action: action }), title));
 }
 exports.NotifySession = NotifySession;
-function autenticate(ws, login, name) {
+function autenticate(ws, login, name, spectate) {
     ws.removeAllListeners();
     ws.on("message", (data) => (0, app_ws_1.onMessage)(cli, data));
     ws.on("error", (error) => (0, app_ws_1.onError)(cli, error));
     ws.on("close", (ws) => (0, app_ws_1.onClose)(cli));
-    let cli = new clients_1.Client(ws, login, name);
+    let cli = new clients_1.Client(ws, login, name, '', spectate);
     clients_1.Clients.getInstance().addClient(ws, cli);
     const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
         content: `Autenticado com sucesso`,
