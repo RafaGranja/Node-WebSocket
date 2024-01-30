@@ -4,14 +4,14 @@ import { STATUS, TYPE } from "../Consts/consts";
 
 class Note {
   public type: TYPE;
-  public message: string;
+  public message: object;
   public title: string;
   public status: STATUS;
 
   constructor(
     status: STATUS = STATUS.OK,
     type: TYPE = TYPE.INFO,
-    message: string = "Mensagem vazia",
+    message: object = {content:"mensagem vazia"},
     title: string = "Nova mensagem"
   ) {
     this.type = type;
@@ -61,7 +61,7 @@ class NotificationError extends NotificationSession {
       new Note(
         STATUS.ERROR,
         TYPE.ERROR,
-        JSON.stringify({ content: note, action: "error" , critical : critical}),
+        { "content": note, "action": "error" , "critical" : critical},
         "Error"
       ),
       sender

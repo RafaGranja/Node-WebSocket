@@ -28,7 +28,7 @@ function onError(cli, err) {
 exports.onError = onError;
 function onMessage(cli, data) {
     log_1.logger.info(`onMessage: ${data}`);
-    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "await", content: `Processando...` }), "Aguarde"));
+    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, { "action": "await", "content": `Processando...` }, "Aguarde"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
     try {
         let jsonObject = JSON.parse(data);
@@ -88,7 +88,7 @@ function onMessage(cli, data) {
 }
 exports.onMessage = onMessage;
 function returnConst(ws) {
-    const note = new notification_1.NotificationSession(new clients_1.Client(ws), new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({ content: (0, consts_1.Consts)(), action: "returnConst" }), "CONSTS"));
+    const note = new notification_1.NotificationSession(new clients_1.Client(ws), new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, { "content": (0, consts_1.Consts)(), "action": "returnConst" }, "CONSTS"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 function onConnection(ws, req) {
@@ -100,17 +100,17 @@ function onConnection(ws, req) {
     log_1.logger.info(`onConnection`);
 }
 function returnSessions(cli) {
-    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
-        action: "returnSessions",
-        content: controlSessions_1.DelpSessions.getInstance().toJSON(),
-    }), "Sucesso"));
+    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
+        "action": "returnSessions",
+        "content": controlSessions_1.DelpSessions.getInstance().toJSON(),
+    }, "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 function returnClients(cli) {
-    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
-        action: "returnClients",
-        content: clients_1.Clients.getInstance().toJSON(),
-    }), "Sucesso"));
+    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
+        "action": "returnClients",
+        "content": clients_1.Clients.getInstance().toJSON(),
+    }, "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 module.exports = (server) => {

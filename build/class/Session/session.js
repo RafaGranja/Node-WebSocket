@@ -61,7 +61,7 @@ class DelpSession {
     }
     addClient(cli) {
         this.clients.addClient(cli.ws, cli);
-        this.notifyAll(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "addClient", content: this.getClients().getClients().size, client: cli.toJSON() }), "Sucesso"));
+        this.notifyAll(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, { "action": "addClient", "content": this.getClients().getClients().size, "client": cli.toJSON() }, "Sucesso"));
         if (this.creator == clients_1.DefaultClient && !cli.spectate) {
             this.setCreator(cli);
         }
@@ -71,7 +71,7 @@ class DelpSession {
     }
     setCreator(cli) {
         this.creator = cli;
-        this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "newCreator", content: this.getClients().getClients().size, client: cli.toJSON() }), "Sucesso"));
+        this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, { "action": "newCreator", "content": this.getClients().getClients().size, "client": cli.toJSON() }, "Sucesso"));
     }
     getState() {
         return this.state;
@@ -79,10 +79,10 @@ class DelpSession {
     setState(state) {
         this.state = state;
         if (state == consts_1.SESSION.OPEN) {
-            this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({ action: "openSession", content: this.getClients().getClients().size, client: this.creator.toJSON() }), "Sucesso"));
+            this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, { "action": "openSession", "content": this.getClients().getClients().size, "client": this.creator.toJSON() }, "Sucesso"));
         }
         else if (state == consts_1.SESSION.CLOSED) {
-            this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({ action: "lockSession", content: this.getClients().getClients().size, client: this.creator.toJSON() }), "Sucesso"));
+            this.notifyAll(clients_1.DefaultClient, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, { "action": "lockSession", "content": this.getClients().getClients().size, "client": this.creator.toJSON() }, "Sucesso"));
         }
     }
 }

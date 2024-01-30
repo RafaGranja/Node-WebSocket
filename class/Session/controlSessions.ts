@@ -64,11 +64,11 @@ export class DelpSessions {
       new Note(
         STATUS.OK,
         TYPE.INFO,
-        JSON.stringify({
-          content: `Conexão estabelecida com a sessão ${cli.key}`,
-          action: "initSession",
-          creator:this.sessions.get(cli.key)?.getCreator().login
-        }),
+        {
+          "content": `Conexão estabelecida com a sessão ${cli.key}`,
+          "action": "initSession",
+          "creator":this.sessions.get(cli.key)?.getCreator().login
+        },
         "Sucesso"
       )
     );
@@ -83,7 +83,7 @@ export class DelpSessions {
       i++;
     });
 
-    return JSON.stringify(ret);
+    return ret;
   }
 
   public addSession(new_session: DelpSession, key: string) {
@@ -120,7 +120,7 @@ export class DelpSessions {
       new Note(
         STATUS.WAIT,
         TYPE.INFO,
-        JSON.stringify({ action: "await", content: "Processando..." }),
+        { "action": "await", "content": "Processando..." },
         "Aguarde"
       )
     );
@@ -138,10 +138,10 @@ export class DelpSessions {
               new Note(
                 jsonObject.status,
                 jsonObject.type,
-                JSON.stringify({
-                  content: jsonObject.message,
-                  action: jsonObject.action,
-                }),
+                {
+                  "content": jsonObject.message,
+                  "action": jsonObject.action,
+                },
                 jsonObject.title
               ),
               cli
@@ -181,7 +181,7 @@ export class DelpSessions {
             break;
           default:
             throw Error(JSON.stringify({
-              message:"action informado - " + jsonObject.action + " - não é válido",critical:1
+              "message":"action informado - " + jsonObject.action + " - não é válido","critical":1
             }));
         }
       }
@@ -308,10 +308,10 @@ export class DelpSessions {
       new Note(
         STATUS.OK,
         TYPE.OK,
-        JSON.stringify({
-          action: "returnSessions",
-          content: DelpSessions.getInstance().getSession(cli.key)?.toJSON(),
-        }),
+        {
+          "action": "returnSessions",
+          "content": DelpSessions.getInstance().getSession(cli.key)?.toJSON(),
+        },
         "Sucesso"
       )
     );
@@ -324,13 +324,13 @@ export class DelpSessions {
       new Note(
         STATUS.OK,
         TYPE.OK,
-        JSON.stringify({
-          action: "returnClients",
-          content: DelpSessions.getInstance()
+        {
+          "action": "returnClients",
+          "content": DelpSessions.getInstance()
             .getSession(cli.key)
             ?.getClients()
             .toJSON(),
-        }),
+        },
         "Sucesso"
       )
     );

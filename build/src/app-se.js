@@ -40,7 +40,7 @@ exports.initSession = initSession;
 function NotifySession(key, sender = clients_1.DefaultClient, action, type, title, message, status) {
     var _a;
     (_a = controlSessions_1.DelpSessions.getInstance()
-        .getSession(key)) === null || _a === void 0 ? void 0 : _a.notifyAll(sender, new notification_1.Note(status, type, JSON.stringify({ content: message, action: action }), title));
+        .getSession(key)) === null || _a === void 0 ? void 0 : _a.notifyAll(sender, new notification_1.Note(status, type, { "content": message, "action": action }, title));
 }
 exports.NotifySession = NotifySession;
 function autenticate(ws, login, name, spectate) {
@@ -50,10 +50,10 @@ function autenticate(ws, login, name, spectate) {
     ws.on("close", (ws) => (0, app_ws_1.onClose)(cli));
     let cli = new clients_1.Client(ws, login, name, '', spectate);
     clients_1.Clients.getInstance().addClient(ws, cli);
-    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
-        content: `Autenticado com sucesso`,
-        action: "autenticate",
-    }), "Sucesso"));
+    const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, {
+        "content": "Autenticado com sucesso",
+        "action": "autenticate",
+    }, "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
 exports.autenticate = autenticate;

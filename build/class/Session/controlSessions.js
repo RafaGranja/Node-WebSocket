@@ -43,11 +43,11 @@ class DelpSessions {
         cli.ws.on("close", () => this.onClose(cli));
         (_a = this.sessions.get(cli.key)) === null || _a === void 0 ? void 0 : _a.addClient(cli);
         clients_1.Clients.getInstance().removeClient(cli.ws);
-        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
-            content: `Conexão estabelecida com a sessão ${cli.key}`,
-            action: "initSession",
-            creator: (_b = this.sessions.get(cli.key)) === null || _b === void 0 ? void 0 : _b.getCreator().login
-        }), "Sucesso"));
+        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, {
+            "content": `Conexão estabelecida com a sessão ${cli.key}`,
+            "action": "initSession",
+            "creator": (_b = this.sessions.get(cli.key)) === null || _b === void 0 ? void 0 : _b.getCreator().login
+        }, "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     toJSON() {
@@ -57,7 +57,7 @@ class DelpSessions {
             ret[i] = item.toJSON();
             i++;
         });
-        return JSON.stringify(ret);
+        return ret;
     }
     addSession(new_session, key) {
         this.sessions.set(key, new_session);
@@ -80,7 +80,7 @@ class DelpSessions {
         (_a = this.getSession(key)) === null || _a === void 0 ? void 0 : _a.notifyAll(sender, note);
     }
     processAction(jsonObject, cli) {
-        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, JSON.stringify({ action: "await", content: "Processando..." }), "Aguarde"));
+        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, { "action": "await", "content": "Processando..." }, "Aguarde"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
         try {
             if (!(0, utils_1.validaValor)(jsonObject.action)) {
@@ -90,10 +90,10 @@ class DelpSessions {
                 switch (jsonObject.action) {
                     case "notifySession":
                     case "execScript":
-                        this.notifySession(cli.key, new notification_1.Note(jsonObject.status, jsonObject.type, JSON.stringify({
-                            content: jsonObject.message,
-                            action: jsonObject.action,
-                        }), jsonObject.title), cli);
+                        this.notifySession(cli.key, new notification_1.Note(jsonObject.status, jsonObject.type, {
+                            "content": jsonObject.message,
+                            "action": jsonObject.action,
+                        }, jsonObject.title), cli);
                         break;
                     case "statusSession":
                         if (!(0, utils_1.validaValor)(jsonObject.state)) {
@@ -129,7 +129,7 @@ class DelpSessions {
                         break;
                     default:
                         throw Error(JSON.stringify({
-                            message: "action informado - " + jsonObject.action + " - não é válido", critical: 1
+                            "message": "action informado - " + jsonObject.action + " - não é válido", "critical": 1
                         }));
                 }
             }
@@ -261,19 +261,19 @@ class DelpSessions {
     }
     returnSessions(cli) {
         var _a;
-        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
-            action: "returnSessions",
-            content: (_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.toJSON(),
-        }), "Sucesso"));
+        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
+            "action": "returnSessions",
+            "content": (_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.toJSON(),
+        }, "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     returnClients(cli) {
         var _a;
-        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, JSON.stringify({
-            action: "returnClients",
-            content: (_a = DelpSessions.getInstance()
+        const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
+            "action": "returnClients",
+            "content": (_a = DelpSessions.getInstance()
                 .getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().toJSON(),
-        }), "Sucesso"));
+        }, "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
 }

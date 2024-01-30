@@ -15,7 +15,7 @@ class Client {
         this.spectate = spectate == 'false' ? false : true;
     }
     toJSON() {
-        return { login: this.login, name: this.name, key: this.key, spectate: this.spectate };
+        return { "login": this.login, "name": this.name, "key": this.key, "spectate": this.spectate };
     }
 }
 exports.Client = Client;
@@ -30,11 +30,11 @@ class SessionClients {
     removeClient(ws) {
         var _a, _b, _c, _d, _e;
         this.clients.delete(ws.ws);
-        (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, JSON.stringify({
-            action: "deleteClient",
-            content: this.clients.size,
-            client: ws.toJSON()
-        }), "Sucesso"));
+        (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, {
+            "action": "deleteClient",
+            "content": this.clients.size,
+            "client": ws.toJSON()
+        }, "Sucesso"));
         if (!((_b = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _b === void 0 ? void 0 : _b.getClients().getAllClients().size)) {
             controlSessions_1.DelpSessions.getInstance().getSessions().delete(ws.key);
         }

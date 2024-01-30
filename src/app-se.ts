@@ -52,7 +52,7 @@ function NotifySession(
       new Note(
         status,
         type,
-        JSON.stringify({ content: message, action: action }),
+        { "content": message, "action": action },
         title
       )
     );
@@ -73,10 +73,10 @@ function autenticate(ws: any, login: string, name: string,spectate : string) {
     new Note(
       STATUS.OK,
       TYPE.INFO,
-      JSON.stringify({
-        content: `Autenticado com sucesso`,
-        action: "autenticate",
-      }),
+      {
+        "content": "Autenticado com sucesso",
+        "action": "autenticate",
+      },
       "Sucesso"
     )
   );

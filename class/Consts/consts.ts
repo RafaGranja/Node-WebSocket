@@ -4,9 +4,9 @@ class STATUS {
   static readonly OK: number = 200;
   static toJSON(): Object {
     return {
-      error: this.ERROR,
-      wait: this.WAIT,
-      ok: this.OK,
+      "error": this.ERROR,
+      "wait": this.WAIT,
+      "ok": this.OK,
     };
   }
 }
@@ -20,11 +20,11 @@ class TYPE {
 
   static toJSON(): Object {
     return {
-      error: this.ERROR,
-      warning: this.WARNING,
-      info: this.INFO,
-      ok: this.OK,
-      action: this.ACTION,
+      "error": this.ERROR,
+      "warning": this.WARNING,
+      "info": this.INFO,
+      "ok": this.OK,
+      "action": this.ACTION,
     };
   }
 }
@@ -35,17 +35,17 @@ class SESSION {
 
   static toJSON(): Object {
     return {
-      closed: this.CLOSED,
-      open: this.OPEN,
+      "closed": this.CLOSED,
+      "open": this.OPEN,
     };
   }
 }
 
 function Consts() {
   return {
-    status: STATUS.toJSON(),
-    type: TYPE.toJSON(),
-    session: SESSION.toJSON(),
+    "status": STATUS.toJSON(),
+    "type": TYPE.toJSON(),
+    "session": SESSION.toJSON(),
   };
 }
 

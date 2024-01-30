@@ -4,7 +4,7 @@ exports.Note = exports.NotificationError = exports.NotificationSession = void 0;
 const clients_1 = require("../Client/clients");
 const consts_1 = require("../Consts/consts");
 class Note {
-    constructor(status = consts_1.STATUS.OK, type = consts_1.TYPE.INFO, message = "Mensagem vazia", title = "Nova mensagem") {
+    constructor(status = consts_1.STATUS.OK, type = consts_1.TYPE.INFO, message = { content: "mensagem vazia" }, title = "Nova mensagem") {
         this.type = type;
         this.message = message;
         this.title = title;
@@ -33,7 +33,7 @@ class NotificationSession {
 exports.NotificationSession = NotificationSession;
 class NotificationError extends NotificationSession {
     constructor(destiny, note, critical, sender = clients_1.DefaultClient) {
-        super(destiny, new Note(consts_1.STATUS.ERROR, consts_1.TYPE.ERROR, JSON.stringify({ content: note, action: "error", critical: critical }), "Error"), sender);
+        super(destiny, new Note(consts_1.STATUS.ERROR, consts_1.TYPE.ERROR, { "content": note, "action": "error", "critical": critical }, "Error"), sender);
     }
 }
 exports.NotificationError = NotificationError;

@@ -37,7 +37,7 @@ function onMessage(cli: Client, data: any) {
     new Note(
       STATUS.WAIT,
       TYPE.INFO,
-      JSON.stringify({ action: "await", content: `Processando...` }),
+      { "action": "await", "content": `Processando...` },
       "Aguarde"
     )
   );
@@ -104,7 +104,7 @@ function returnConst(ws: any) {
     new Note(
       STATUS.OK,
       TYPE.INFO,
-      JSON.stringify({ content: Consts(), action: "returnConst" }),
+      { "content": Consts(), "action": "returnConst" },
       "CONSTS"
     )
   );
@@ -127,10 +127,10 @@ function returnSessions(cli: Client) {
     new Note(
       STATUS.OK,
       TYPE.OK,
-      JSON.stringify({
-        action: "returnSessions",
-        content: DelpSessions.getInstance().toJSON(),
-      }),
+      {
+        "action": "returnSessions",
+        "content": DelpSessions.getInstance().toJSON(),
+      },
       "Sucesso"
     )
   );
@@ -143,10 +143,10 @@ function returnClients(cli: Client) {
     new Note(
       STATUS.OK,
       TYPE.OK,
-      JSON.stringify({
-        action: "returnClients",
-        content: Clients.getInstance().toJSON(),
-      }),
+     {
+        "action": "returnClients",
+        "content": Clients.getInstance().toJSON(),
+      },
       "Sucesso"
     )
   );

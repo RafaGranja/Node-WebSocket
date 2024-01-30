@@ -79,7 +79,7 @@ export class DelpSession {
     this.notifyAll(cli,new Note(
       STATUS.WAIT,
       TYPE.INFO,
-      JSON.stringify({ action: "addClient", content: this.getClients().getClients().size, client : cli.toJSON() }),
+      { "action": "addClient", "content": this.getClients().getClients().size, "client" : cli.toJSON() },
       "Sucesso"
     ))
     if(this.creator==DefaultClient && !cli.spectate) {
@@ -96,7 +96,7 @@ export class DelpSession {
     this.notifyAll(DefaultClient,new Note(
       STATUS.WAIT,
       TYPE.INFO,
-      JSON.stringify({ action: "newCreator", content: this.getClients().getClients().size, client : cli.toJSON() }),
+      { "action": "newCreator", "content": this.getClients().getClients().size, "client" : cli.toJSON() },
       "Sucesso"
     ))
   }
@@ -111,7 +111,7 @@ export class DelpSession {
       this.notifyAll(DefaultClient,new Note(
         STATUS.OK,
         TYPE.INFO,
-        JSON.stringify({ action: "openSession", content: this.getClients().getClients().size, client : this.creator.toJSON() }),
+        { "action": "openSession", "content": this.getClients().getClients().size, "client" : this.creator.toJSON() },
         "Sucesso"
       ))
     }
@@ -119,7 +119,7 @@ export class DelpSession {
       this.notifyAll(DefaultClient,new Note(
         STATUS.OK,
         TYPE.INFO,
-        JSON.stringify({ action: "lockSession", content: this.getClients().getClients().size, client : this.creator.toJSON() }),
+        { "action": "lockSession", "content": this.getClients().getClients().size, "client" : this.creator.toJSON() },
         "Sucesso"
       ))
     }

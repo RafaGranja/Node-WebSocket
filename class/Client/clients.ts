@@ -31,7 +31,7 @@ class Client {
   }
 
   toJSON() {
-    return { login: this.login, name: this.name, key: this.key, spectate:this.spectate };
+    return { "login": this.login, "name": this.name, "key": this.key, "spectate":this.spectate };
   }
 }
 
@@ -50,11 +50,11 @@ class SessionClients {
   public removeClient(ws: Client) {
     this.clients.delete(ws.ws);
     DelpSessions.getInstance().getSession(ws.key)?.notifyAll(ws,new Note(STATUS.OK,TYPE.INFO,
-      JSON.stringify({
-        action: "deleteClient",
-        content: this.clients.size,
-        client : ws.toJSON()
-      }),
+      {
+        "action": "deleteClient",
+        "content": this.clients.size,
+        "client" : ws.toJSON()
+      },
       "Sucesso")
     )
 

@@ -4,9 +4,9 @@ exports.Consts = exports.SESSION = exports.TYPE = exports.STATUS = void 0;
 class STATUS {
     static toJSON() {
         return {
-            error: this.ERROR,
-            wait: this.WAIT,
-            ok: this.OK,
+            "error": this.ERROR,
+            "wait": this.WAIT,
+            "ok": this.OK,
         };
     }
 }
@@ -17,11 +17,11 @@ STATUS.OK = 200;
 class TYPE {
     static toJSON() {
         return {
-            error: this.ERROR,
-            warning: this.WARNING,
-            info: this.INFO,
-            ok: this.OK,
-            action: this.ACTION,
+            "error": this.ERROR,
+            "warning": this.WARNING,
+            "info": this.INFO,
+            "ok": this.OK,
+            "action": this.ACTION,
         };
     }
 }
@@ -34,8 +34,8 @@ TYPE.ACTION = 202;
 class SESSION {
     static toJSON() {
         return {
-            closed: this.CLOSED,
-            open: this.OPEN,
+            "closed": this.CLOSED,
+            "open": this.OPEN,
         };
     }
 }
@@ -44,9 +44,9 @@ SESSION.CLOSED = -1;
 SESSION.OPEN = 1;
 function Consts() {
     return {
-        status: STATUS.toJSON(),
-        type: TYPE.toJSON(),
-        session: SESSION.toJSON(),
+        "status": STATUS.toJSON(),
+        "type": TYPE.toJSON(),
+        "session": SESSION.toJSON(),
     };
 }
 exports.Consts = Consts;
