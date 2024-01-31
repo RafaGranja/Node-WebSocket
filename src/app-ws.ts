@@ -145,7 +145,7 @@ function returnClients(cli: Client) {
       TYPE.OK,
      {
         "action": "returnClients",
-        "content": Clients.getInstance().toJSON(),
+        "content": Clients.getInstance().toArray(),
       },
       "Sucesso"
     )

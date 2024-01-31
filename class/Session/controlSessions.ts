@@ -329,7 +329,7 @@ export class DelpSessions {
           "content": DelpSessions.getInstance()
             .getSession(cli.key)
             ?.getClients()
-            .toJSON(),
+            .toArray(),
         },
         "Sucesso"
       )
