@@ -77,6 +77,17 @@ class SessionClients {
         });
         return JSON.stringify(ret);
     }
+    toArray() {
+        let ret = new Array();
+        let i = 0;
+        this.clients.forEach((item) => {
+            if (!item.spectate) {
+                ret.push(item.toJSON());
+            }
+            i++;
+        });
+        return ret;
+    }
 }
 exports.SessionClients = SessionClients;
 class Clients {
@@ -117,6 +128,15 @@ class Clients {
             i++;
         });
         return JSON.stringify(ret);
+    }
+    toArray() {
+        let ret = new Array();
+        let i = 0;
+        this.clients.forEach((item) => {
+            ret.push(item.toJSON());
+            i++;
+        });
+        return ret;
     }
 }
 exports.Clients = Clients;

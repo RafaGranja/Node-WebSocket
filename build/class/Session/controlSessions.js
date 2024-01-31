@@ -272,7 +272,7 @@ class DelpSessions {
         const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
             "action": "returnClients",
             "content": (_a = DelpSessions.getInstance()
-                .getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().toJSON(),
+                .getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().toArray(),
         }, "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }

@@ -109,7 +109,7 @@ function returnSessions(cli) {
 function returnClients(cli) {
     const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
         "action": "returnClients",
-        "content": clients_1.Clients.getInstance().toJSON(),
+        "content": clients_1.Clients.getInstance().toArray(),
     }, "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }
