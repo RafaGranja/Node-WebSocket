@@ -51,11 +51,9 @@ class DelpSessions {
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     toJSON() {
-        let ret;
-        let i = 0;
+        let ret = new Array();
         this.sessions.forEach((item) => {
-            ret[i] = item.toJSON();
-            i++;
+            ret.push(item.toJSON());
         });
         return ret;
     }

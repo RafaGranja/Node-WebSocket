@@ -22,7 +22,9 @@ function initSession(key: string, cli?: Client): Boolean {
       if (
         DelpSessions.getInstance().getSession(key)?.getState() == SESSION.CLOSED && !cli.spectate
       ) {
-        throw new CustomError("Sessão está fechada para entrada de novos usuários",1);
+        throw new CustomError("Sessão está fechada para entrada de novos usuários, Administrador Responsável : "+
+        DelpSessions.getInstance().getSession(key)?.getCreator().name
+        ,1);
       } else {
         DelpSessions.getInstance().addClient(cli);
       }
