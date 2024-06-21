@@ -1,6 +1,6 @@
 import { spec } from "node:test/reporters";
 import { logger } from "../../src/log";
-import { STATUS, TYPE } from "../Consts/consts";
+import { SESSION, STATUS, TYPE } from "../Consts/consts";
 import { Note, NotificationSession } from "../Notification/notification";
 import { NotificationService } from "../Notification/notificationService";
 import { DelpSessions } from "../Session/controlSessions";
@@ -75,6 +75,9 @@ class SessionClients {
         DelpSessions.getInstance().getSession(ws.key)?.setCreator(
           DefaultClient
         )
+        if(DelpSessions.getInstance().getSession(ws.key)?.getState()==SESSION.CLOSED){
+          DelpSessions.getInstance().getSession(ws.key)?.setState(SESSION.OPEN)
+        }
       }
     }
   }
