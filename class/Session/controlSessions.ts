@@ -44,6 +44,9 @@ export class DelpSessions {
     const note = new NotificationError(cli, err,0);
     NotificationService.getInstance().addNotification(note);
     logger.info(`onError:${cli.ws}, message:${err.message}`);
+    if(!DelpSessions.getInstance().getSession(cli.key)?.getClients().getAllClients().size){
+      DelpSessions.getInstance().removeSession(cli.key)
+    } 
   }
 
   //MÉTODO QUE É CHAMADO AO CLIENT ENVIAR UMA MENSAGEM PARA A SESSÃO
@@ -90,6 +93,10 @@ export class DelpSessions {
 
   public getSession(key: string) {
     return this.sessions.get(key);
+  }
+
+  public removeSession(key: string) {
+    return this.sessions.delete(key)
   }
 
   public getSessions() {
