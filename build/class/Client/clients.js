@@ -28,7 +28,7 @@ class SessionClients {
         this.clients.set(ws, cli);
     }
     removeClient(ws) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f;
         this.clients.delete(ws.ws);
         (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, {
             "action": "deleteClient",
@@ -38,7 +38,7 @@ class SessionClients {
         if (!((_b = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _b === void 0 ? void 0 : _b.getClients().getAllClients().size)) {
             controlSessions_1.DelpSessions.getInstance().getSessions().delete(ws.key);
         }
-        else if (((_c = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _c === void 0 ? void 0 : _c.getCreator()) == ws) {
+        else if (((_c = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _c === void 0 ? void 0 : _c.getCreator().login) == ws.login) {
             let array = Array.from(this.clients.values());
             var array_aux = array.filter(function (a) { return a.spectate == false; });
             array_aux.sort((a, b) => { return Number(a.time <= b.time); });
@@ -48,9 +48,7 @@ class SessionClients {
             }
             else {
                 (_e = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _e === void 0 ? void 0 : _e.setCreator(DefaultClient);
-                if (((_f = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _f === void 0 ? void 0 : _f.getState()) == consts_1.SESSION.CLOSED) {
-                    (_g = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _g === void 0 ? void 0 : _g.setState(consts_1.SESSION.OPEN);
-                }
+                (_f = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _f === void 0 ? void 0 : _f.setState(consts_1.SESSION.OPEN);
             }
         }
     }
