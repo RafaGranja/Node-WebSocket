@@ -27,10 +27,14 @@ class DelpSessions {
         log_1.logger.error(`onClose: ${cli}`);
     }
     onError(cli, err) {
+        var _a;
         log_1.logger.error(`onError:${cli.ws}, message:${err.message}`);
         const note = new notification_1.NotificationError(cli, err, 0);
         notificationService_1.NotificationService.getInstance().addNotification(note);
         log_1.logger.info(`onError:${cli.ws}, message:${err.message}`);
+        if (!((_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().getAllClients().size)) {
+            DelpSessions.getInstance().removeSession(cli.key);
+        }
     }
     onMessage(cli, data) {
         let jsonObject = JSON.parse(data);
@@ -62,6 +66,9 @@ class DelpSessions {
     }
     getSession(key) {
         return this.sessions.get(key);
+    }
+    removeSession(key) {
+        return this.sessions.delete(key);
     }
     getSessions() {
         return this.sessions;

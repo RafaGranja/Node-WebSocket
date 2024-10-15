@@ -59,9 +59,9 @@ class SessionClients {
     )
 
     if(!DelpSessions.getInstance().getSession(ws.key)?.getClients().getAllClients().size){
-      DelpSessions.getInstance().getSessions().delete(ws.key);
+      DelpSessions.getInstance().removeSession(ws.key)
     } 
-    else if(DelpSessions.getInstance().getSession(ws.key)?.getCreator()==ws){
+    else if(DelpSessions.getInstance().getSession(ws.key)?.getCreator().login==ws.login){
       let array = Array.from(this.clients.values())
       var array_aux = array.filter(function(a){return a.spectate==false})
       array_aux.sort((a,b)=>{return Number(a.time<=b.time)})
@@ -72,12 +72,7 @@ class SessionClients {
         )
       }
       else{
-        DelpSessions.getInstance().getSession(ws.key)?.setCreator(
-          DefaultClient
-        )
-        if(DelpSessions.getInstance().getSession(ws.key)?.getState()==SESSION.CLOSED){
-          DelpSessions.getInstance().getSession(ws.key)?.setState(SESSION.OPEN)
-        }
+        DelpSessions.getInstance().removeSession(ws.key)
       }
     }
   }
