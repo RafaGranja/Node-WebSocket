@@ -114,10 +114,10 @@ function returnConst(ws: any) {
 //MÉTODO UTILIZADO AO INICIAR CONEXÕES CLIENT-SERVER
 function onConnection(ws: any, req: any) {
   let cli = new Client(ws);
-  ws.on("message", (data: any) => onMessage(cli, data));
-  ws.on("error", (error: any) => onError(cli, error));
-  ws.on("close", (ws: any) => onClose(cli));
-  Clients.getInstance().addClient(ws, cli);
+  cli.ws.on("message", (data: any) => onMessage(cli, data));
+  cli.ws.on("error", (error: any) => onError(cli, error));
+  cli.ws.on("close", (ws: any) => onClose(cli));
+  Clients.getInstance().addClient(cli.ws, cli);
   logger.info(`onConnection`);
 }
 

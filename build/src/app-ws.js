@@ -93,10 +93,10 @@ function returnConst(ws) {
 }
 function onConnection(ws, req) {
     let cli = new clients_1.Client(ws);
-    ws.on("message", (data) => onMessage(cli, data));
-    ws.on("error", (error) => onError(cli, error));
-    ws.on("close", (ws) => onClose(cli));
-    clients_1.Clients.getInstance().addClient(ws, cli);
+    cli.ws.on("message", (data) => onMessage(cli, data));
+    cli.ws.on("error", (error) => onError(cli, error));
+    cli.ws.on("close", (ws) => onClose(cli));
+    clients_1.Clients.getInstance().addClient(cli.ws, cli);
     log_1.logger.info(`onConnection`);
 }
 function returnSessions(cli) {

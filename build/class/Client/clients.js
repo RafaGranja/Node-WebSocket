@@ -28,11 +28,7 @@ class SessionClients {
         this.clients.set(ws, cli);
     }
     removeClient(ws) {
-<<<<<<< HEAD
-        var _a, _b, _c, _d, _e, _f;
-=======
         var _a, _b, _c, _d;
->>>>>>> 40d2efa40fc022f8738258d52d53e3dc35c48c4a
         this.clients.delete(ws.ws);
         (_a = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _a === void 0 ? void 0 : _a.notifyAll(ws, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, {
             "action": "deleteClient",
@@ -51,12 +47,7 @@ class SessionClients {
                 (_d = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _d === void 0 ? void 0 : _d.setCreator(array_aux[0]);
             }
             else {
-<<<<<<< HEAD
-                (_e = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _e === void 0 ? void 0 : _e.setCreator(DefaultClient);
-                (_f = controlSessions_1.DelpSessions.getInstance().getSession(ws.key)) === null || _f === void 0 ? void 0 : _f.setState(consts_1.SESSION.OPEN);
-=======
                 controlSessions_1.DelpSessions.getInstance().removeSession(ws.key);
->>>>>>> 40d2efa40fc022f8738258d52d53e3dc35c48c4a
             }
         }
     }
