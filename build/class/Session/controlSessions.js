@@ -21,7 +21,8 @@ class DelpSessions {
     }
     onClose(cli) {
         var _a;
-        cli.ws.removeAllListeners();
+        cli.removeAllListeners();
+        clearInterval(cli.verification);
         (_a = this.sessions.get(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
         clients_1.Clients.getInstance().removeClient(cli);
         log_1.logger.info(`onClose controlSession: ${JSON.stringify(cli.toJSON())}`);

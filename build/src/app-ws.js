@@ -14,7 +14,8 @@ const customError_1 = require("../class/Error/customError");
 function onClose(cli) {
     var _a;
     cli.ws.pause();
-    cli.ws.removeAllListeners();
+    cli.removeAllListeners();
+    clearInterval(cli.verification);
     clients_1.Clients.getInstance().removeClientLogin(cli.login, cli.key);
     if (cli.key != '') {
         (_a = controlSessions_1.DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
@@ -53,7 +54,7 @@ function onMessage(cli, data) {
                         throw new customError_1.CustomError("login informado não é válido", 1);
                     }
                     else {
-                        (0, app_se_1.autenticate)(cli.ws, jsonObject.login, jsonObject.name, jsonObject.spectate.toString());
+                        (0, app_se_1.autenticate)(cli, jsonObject.login, jsonObject.name, jsonObject.spectate.toString());
                     }
                     break;
                 case "initSession":

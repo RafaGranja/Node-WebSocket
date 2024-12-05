@@ -18,7 +18,7 @@ function initSession(key, cli) {
         throw Error("Client informado não é válido");
     }
     else {
-        cli.ws.removeAllListeners();
+        cli.removeAllListeners();
         cli = new clients_1.Client(cli.ws, cli.login, cli.name, key, cli.spectate.toString());
         if (controlSessions_1.DelpSessions.getInstance().hasSession(key)) {
             if (((_a = controlSessions_1.DelpSessions.getInstance().getSession(key)) === null || _a === void 0 ? void 0 : _a.getState()) == consts_1.SESSION.CLOSED && !cli.spectate) {
@@ -44,13 +44,13 @@ function NotifySession(key, sender = clients_1.DefaultClient, action, type, titl
         .getSession(key)) === null || _a === void 0 ? void 0 : _a.notifyAll(sender, new notification_1.Note(status, type, { "content": message, "action": action }, title));
 }
 exports.NotifySession = NotifySession;
-function autenticate(ws, login, name, spectate) {
-    ws.removeAllListeners();
-    ws.on("message", (data) => (0, app_ws_1.onMessage)(cli, data));
-    ws.on("error", (error) => (0, app_ws_1.onError)(cli, error));
-    ws.on("close", (ws) => (0, app_ws_1.onClose)(cli));
-    let cli = new clients_1.Client(ws, login, name, '', spectate);
-    clients_1.Clients.getInstance().addClient(ws, cli);
+function autenticate(cli, login, name, spectate) {
+    cli.removeAllListeners();
+    cli.ws.on("message", (data) => (0, app_ws_1.onMessage)(cli, data));
+    cli.ws.on("error", (error) => (0, app_ws_1.onError)(cli, error));
+    cli.ws.on("close", (ws) => (0, app_ws_1.onClose)(cli));
+    let _cli = new clients_1.Client(cli.ws, login, name, '', spectate);
+    clients_1.Clients.getInstance().addClient(cli.ws, _cli);
     const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.INFO, {
         "content": "Autenticado com sucesso",
         "action": "autenticate",

@@ -14,7 +14,7 @@ function initSession(key: string, cli?: Client): Boolean {
   if (cli == undefined || cli == null) {
     throw Error("Client informado não é válido");
   } else {
-    cli.ws.removeAllListeners();
+    cli.removeAllListeners();
 
     cli = new Client(cli.ws, cli.login, cli.name, key,cli.spectate.toString());
 
@@ -60,16 +60,16 @@ function NotifySession(
     );
 }
 
-function autenticate(ws: any, login: string, name: string,spectate : string) {
-  ws.removeAllListeners();
+function autenticate(cli: Client, login: string, name: string,spectate : string) {
+  cli.removeAllListeners();
 
-  ws.on("message", (data: any) => onMessage(cli, data));
-  ws.on("error", (error: any) => onError(cli, error));
-  ws.on("close", (ws: any) => onClose(cli));
+  cli.ws.on("message", (data: any) => onMessage(cli, data));
+  cli.ws.on("error", (error: any) => onError(cli, error));
+  cli.ws.on("close", (ws: any) => onClose(cli));
 
-  let cli: Client = new Client(ws, login, name,'',spectate);
+  let _cli: Client = new Client(cli.ws, login, name,'',spectate);
 
-  Clients.getInstance().addClient(ws, cli);
+  Clients.getInstance().addClient(cli.ws, _cli);
   const note = new NotificationSession(
     cli,
     new Note(

@@ -62,6 +62,13 @@ class Client {
   toJSON() {
     return { "login": this.login, "name": this.name, "key": this.key, "spectate":this.spectate };
   }
+
+  removeAllListeners(){
+    this.ws.removeAllListeners();
+    this.ws.on("close",()=>{
+      clearInterval(this.verification);
+    });
+  }
 }
 
 class SessionClients {

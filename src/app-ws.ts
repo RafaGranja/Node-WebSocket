@@ -16,7 +16,8 @@ import { CustomError } from "../class/Error/customError";
 //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
 function onClose(cli: Client) {
   cli.ws.pause()
-  cli.ws.removeAllListeners()
+  cli.removeAllListeners()
+  clearInterval(cli.verification);
   Clients.getInstance().removeClientLogin(cli.login,cli.key);
   if(cli.key!=''){
     DelpSessions.getInstance().getSession(cli.key)?.deleteClientMap(cli);
@@ -66,7 +67,7 @@ function onMessage(cli: Client, data: any) {
           } else if (!validaValor(jsonObject.login)) {
             throw new CustomError("login informado não é válido",1);
           } else {
-            autenticate(cli.ws, jsonObject.login, jsonObject.name,jsonObject.spectate.toString());
+            autenticate(cli, jsonObject.login, jsonObject.name,jsonObject.spectate.toString());
           }
           break;
         case "initSession":
