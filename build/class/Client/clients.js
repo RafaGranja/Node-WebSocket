@@ -13,6 +13,28 @@ class Client {
         this.key = key;
         this.time = new Date();
         this.spectate = spectate == 'false' ? false : true;
+        this.isAlive = true;
+        if (this.ws != null && this.ws != undefined) {
+            this.connection();
+        }
+    }
+    connection() {
+        this.ws.on('pong', this.heartbeat);
+        this.verification = setInterval(() => {
+            var _a;
+            if (this.isAlive === false) {
+                (_a = controlSessions_1.DelpSessions.getInstance().getSession(this.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(this);
+                Clients.getInstance().removeClient(this);
+            }
+            this.isAlive = false;
+            this.ws.ping();
+        }, 5000);
+        this.ws.on("close", () => {
+            clearInterval(this.verification);
+        });
+    }
+    heartbeat() {
+        this.isAlive = true;
     }
     toJSON() {
         return { "login": this.login, "name": this.name, "key": this.key, "spectate": this.spectate };

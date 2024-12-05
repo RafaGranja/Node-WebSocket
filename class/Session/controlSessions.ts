@@ -32,10 +32,10 @@ export class DelpSessions {
 
   //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
   public onClose(cli: Client) {
+    cli.ws.removeAllListeners()
     this.sessions.get(cli.key)?.deleteClientMap(cli);
     Clients.getInstance().removeClient(cli);
-    logger.info(`onClose: ${cli}`);
-    logger.error(`onClose: ${cli}`);
+    logger.info(`onClose controlSession: ${JSON.stringify(cli.toJSON())}`);
   }
 
   //MÉTODO QUE É CHAMADO AO OCORRER UM ERRO NO WS-CLIENT

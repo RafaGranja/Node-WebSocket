@@ -14,6 +14,8 @@ class Client {
   public key: any;
   public time : Date;
   public spectate : boolean;
+  public verification : any;
+  private isAlive : boolean;
 
   constructor(
     ws: any = null,
@@ -28,7 +30,34 @@ class Client {
     this.key = key;
     this.time = new Date()
     this.spectate = spectate == 'false' ? false : true;
+    this.isAlive = true;
+    if(this.ws!=null && this.ws!=undefined){
+      this.connection()
+    }
   }
+
+  connection(){
+    this.ws.on('pong', this.heartbeat);
+
+    this.verification = setInterval(()=>{
+      if (this.isAlive === false) {
+        DelpSessions.getInstance().getSession(this.key)?.deleteClientMap(this);
+        Clients.getInstance().removeClient(this);
+      }
+
+      this.isAlive = false;
+      this.ws.ping();
+    },5000)
+
+    this.ws.on("close",()=>{
+      clearInterval(this.verification);
+    });
+  }
+
+  heartbeat() {
+    this.isAlive = true;
+  }
+  
 
   toJSON() {
     return { "login": this.login, "name": this.name, "key": this.key, "spectate":this.spectate };

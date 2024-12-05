@@ -13,11 +13,14 @@ const controlSessions_1 = require("../class/Session/controlSessions");
 const customError_1 = require("../class/Error/customError");
 function onClose(cli) {
     var _a;
+    cli.ws.pause();
+    cli.ws.removeAllListeners();
     clients_1.Clients.getInstance().removeClientLogin(cli.login, cli.key);
     if (cli.key != '') {
         (_a = controlSessions_1.DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
     }
-    log_1.logger.info(`onClose: ${cli}`);
+    log_1.logger.info(`onClose app-ws: ${JSON.stringify(cli.toJSON())}`);
+    cli.ws.resume();
 }
 exports.onClose = onClose;
 function onError(cli, err) {
@@ -97,7 +100,7 @@ function onConnection(ws, req) {
     cli.ws.on("error", (error) => onError(cli, error));
     cli.ws.on("close", (ws) => onClose(cli));
     clients_1.Clients.getInstance().addClient(cli.ws, cli);
-    log_1.logger.info(`onConnection`);
+    log_1.logger.info(`onConnection app-ws`);
 }
 function returnSessions(cli) {
     const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
