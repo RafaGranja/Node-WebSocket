@@ -22,17 +22,16 @@ class DelpSessions {
     onClose(cli) {
         var _a;
         cli.removeAllListeners();
-        clearInterval(cli.verification);
         (_a = this.sessions.get(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
         clients_1.Clients.getInstance().removeClient(cli);
         log_1.logger.info(`onClose controlSession: ${JSON.stringify(cli.toJSON())}`);
     }
     onError(cli, err) {
         var _a;
-        log_1.logger.error(`onError:${cli.ws}, message:${err.message}`);
+        log_1.logger.error(`onError controlSessions:${cli.ws}, message:${err.message}`);
         const note = new notification_1.NotificationError(cli, err, 0);
         notificationService_1.NotificationService.getInstance().addNotification(note);
-        log_1.logger.info(`onError:${cli.ws}, message:${err.message}`);
+        log_1.logger.info(`onError controlSessions:${cli.ws}, message:${err.message}`);
         if (!((_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.getClients().getAllClients().size)) {
             DelpSessions.getInstance().removeSession(cli.key);
         }
@@ -141,7 +140,7 @@ class DelpSessions {
             }
         }
         catch (e) {
-            log_1.logger.error(`onError:${cli.ws}, message:${e.message}`);
+            log_1.logger.error(`onError processAction:${cli.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
@@ -161,7 +160,7 @@ class DelpSessions {
             }
         }
         catch (e) {
-            log_1.logger.error(`onError:${cli.ws}, message:${e.message}`);
+            log_1.logger.error(`onError setCreator:${cli.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(cli, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
@@ -171,7 +170,7 @@ class DelpSessions {
         (_a = this.getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(cli);
         clients_1.Clients.getInstance().removeClient(cli);
         cli.key = '';
-        (0, app_se_1.autenticate)(cli.ws, cli.login, cli.name, cli.spectate.toString());
+        (0, app_se_1.autenticate)(cli, cli.login, cli.name, cli.spectate.toString());
     }
     statusSession(state, sender) {
         var _a;
@@ -188,7 +187,7 @@ class DelpSessions {
             }
         }
         catch (e) {
-            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            log_1.logger.error(`onError statusSession:${sender.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
@@ -215,7 +214,7 @@ class DelpSessions {
             }
         }
         catch (e) {
-            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            log_1.logger.error(`onError deleteClient:${sender.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
@@ -236,7 +235,7 @@ class DelpSessions {
             }
         }
         catch (e) {
-            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            log_1.logger.error(`onError lockSession:${sender.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }
@@ -256,7 +255,7 @@ class DelpSessions {
             }
         }
         catch (e) {
-            log_1.logger.error(`onError:${sender.ws}, message:${e.message}`);
+            log_1.logger.error(`onError openSession:${sender.ws}, message:${e.message}`);
             const note = new notification_1.NotificationError(sender, e === null || e === void 0 ? void 0 : e.message, e === null || e === void 0 ? void 0 : e.critical);
             notificationService_1.NotificationService.getInstance().addNotification(note);
         }

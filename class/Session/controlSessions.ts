@@ -33,7 +33,6 @@ export class DelpSessions {
   //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
   public onClose(cli: Client) {
     cli.removeAllListeners()
-    clearInterval(cli.verification);
     this.sessions.get(cli.key)?.deleteClientMap(cli);
     Clients.getInstance().removeClient(cli);
     logger.info(`onClose controlSession: ${JSON.stringify(cli.toJSON())}`);
@@ -41,10 +40,10 @@ export class DelpSessions {
 
   //MÉTODO QUE É CHAMADO AO OCORRER UM ERRO NO WS-CLIENT
   public onError(cli: Client, err: any) {
-    logger.error(`onError:${cli.ws}, message:${err.message}`);
+    logger.error(`onError controlSessions:${cli.ws}, message:${err.message}`);
     const note = new NotificationError(cli, err,0);
     NotificationService.getInstance().addNotification(note);
-    logger.info(`onError:${cli.ws}, message:${err.message}`);
+    logger.info(`onError controlSessions:${cli.ws}, message:${err.message}`);
     if(!DelpSessions.getInstance().getSession(cli.key)?.getClients().getAllClients().size){
       DelpSessions.getInstance().removeSession(cli.key)
     } 
@@ -192,7 +191,7 @@ export class DelpSessions {
         }
       }
     } catch (e: any) {
-      logger.error(`onError:${cli.ws}, message:${e.message}`);
+      logger.error(`onError processAction:${cli.ws}, message:${e.message}`);
       const note = new NotificationError(cli, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
@@ -213,7 +212,7 @@ export class DelpSessions {
         throw new CustomError("Usuário não possui acesso a esta funcionalidade",0);
       }
     } catch (e: any) {
-      logger.error(`onError:${cli.ws}, message:${e.message}`);
+      logger.error(`onError setCreator:${cli.ws}, message:${e.message}`);
       const note = new NotificationError(cli, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
@@ -224,7 +223,7 @@ export class DelpSessions {
     this.getSession(cli.key)?.deleteClientMap(cli);
     Clients.getInstance().removeClient(cli)
     cli.key='';
-    autenticate(cli.ws,cli.login,cli.name,cli.spectate.toString())
+    autenticate(cli,cli.login,cli.name,cli.spectate.toString())
   }
  
   private statusSession(state: number, sender: Client) {
@@ -238,7 +237,7 @@ export class DelpSessions {
         this.getSession(sender.key)?.setState(state);
       }
     } catch (e: any) {
-      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      logger.error(`onError statusSession:${sender.ws}, message:${e.message}`);
       const note = new NotificationError(sender, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
@@ -263,7 +262,7 @@ export class DelpSessions {
       }
     }
     catch (e: any) {
-      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      logger.error(`onError deleteClient:${sender.ws}, message:${e.message}`);
       const note = new NotificationError(sender, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
@@ -281,7 +280,7 @@ export class DelpSessions {
         this.getSession(sender.key)?.setState(SESSION.CLOSED);
       }
     } catch (e: any) {
-      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      logger.error(`onError lockSession:${sender.ws}, message:${e.message}`);
       const note = new NotificationError(sender, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }
@@ -298,7 +297,7 @@ export class DelpSessions {
         this.getSession(sender.key)?.setState(SESSION.OPEN);
       }
     } catch (e: any) {
-      logger.error(`onError:${sender.ws}, message:${e.message}`);
+      logger.error(`onError openSession:${sender.ws}, message:${e.message}`);
       const note = new NotificationError(sender, e?.message,e?.critical);
       NotificationService.getInstance().addNotification(note);
     }

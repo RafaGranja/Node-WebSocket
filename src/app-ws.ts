@@ -15,20 +15,18 @@ import { CustomError } from "../class/Error/customError";
 
 //METODO QUE É CHAMADO QUANDO UMA CONEXÃO É ENCERRADA
 function onClose(cli: Client) {
-  cli.ws.pause()
+  logger.info(`onClose app-ws: ${JSON.stringify(cli.toJSON())}`);
   cli.removeAllListeners()
-  clearInterval(cli.verification);
   Clients.getInstance().removeClientLogin(cli.login,cli.key);
   if(cli.key!=''){
     DelpSessions.getInstance().getSession(cli.key)?.deleteClientMap(cli);
   }
   logger.info(`onClose app-ws: ${JSON.stringify(cli.toJSON())}`);
-  cli.ws.resume()
 }
 
 //MÉTODO CHAMADO AO OCORRER UM ERRO DE PROCESSAMENTO
 function onError(cli: Client, err: any) {
-  logger.error(`onError:${cli}, message:${err.message}`);
+  logger.error(`onError app-ws:${cli}, message:${err.message}`);
   const note = new NotificationError(cli, err.message,0);
   NotificationService.getInstance().addNotification(note);
 }
