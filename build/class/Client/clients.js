@@ -13,28 +13,25 @@ class Client {
         this.key = key;
         this.time = new Date();
         this.spectate = spectate == 'false' ? false : true;
-        this.isAlive = true;
         if (this.ws != null && this.ws != undefined) {
             this.connection();
         }
     }
     connection() {
-        this.ws.on('pong', this.heartbeat);
-        this.verification = setInterval(() => {
-            var _a;
-            if (this.isAlive === false) {
+        var _a;
+        if (this.login != "Servidor") {
+            if (this.ws.readyState != 1 && this.ws.readyState != 0) {
+                log_1.logger.error(`onVerification not Alive client:${this.login}, session:${this.key}`);
                 (_a = controlSessions_1.DelpSessions.getInstance().getSession(this.key)) === null || _a === void 0 ? void 0 : _a.deleteClientMap(this);
                 Clients.getInstance().removeClient(this);
             }
-            this.isAlive = false;
-            this.ws.ping();
-        }, 5000);
-        this.ws.on("close", () => {
-            clearInterval(this.verification);
-        });
-    }
-    heartbeat() {
-        this.isAlive = true;
+            else {
+                this.ws.send('');
+                setTimeout(() => {
+                    this.connection();
+                }, 5000);
+            }
+        }
     }
     toJSON() {
         return { "login": this.login, "name": this.name, "key": this.key, "spectate": this.spectate };
@@ -95,24 +92,22 @@ class SessionClients {
         return ret;
     }
     toJSON() {
-        let ret = new Array();
+        let ret = {};
         let i = 0;
         this.clients.forEach((item) => {
             if (!item.spectate) {
-                ret.push(item.toJSON());
+                ret[i] = (item.toJSON());
             }
             i++;
         });
-        return JSON.stringify(ret);
+        return ret;
     }
     toArray() {
         let ret = new Array();
-        let i = 0;
         this.clients.forEach((item) => {
             if (!item.spectate) {
                 ret.push(item.toJSON());
             }
-            i++;
         });
         return ret;
     }

@@ -15,7 +15,6 @@ class Client {
   public time : Date;
   public spectate : boolean;
   public verification : any;
-  private isAlive : boolean;
 
   constructor(
     ws: any = null,
@@ -30,34 +29,31 @@ class Client {
     this.key = key;
     this.time = new Date()
     this.spectate = spectate == 'false' ? false : true;
-    this.isAlive = true;
     if(this.ws!=null && this.ws!=undefined){
       this.connection()
     }
   }
 
   connection(){
-    this.ws.on('pong', this.heartbeat);
 
-    this.verification = setInterval(()=>{
-      if (this.isAlive === false) {
+    if(this.login!="Servidor"){
+      if (this.ws.readyState != 1 && this.ws.readyState!=0) {
+
+        logger.error(`onVerification not Alive client:${this.login}, session:${this.key}`);
         DelpSessions.getInstance().getSession(this.key)?.deleteClientMap(this);
         Clients.getInstance().removeClient(this);
+
       }
+      else{
+        this.ws.send('')
+        setTimeout(()=>{
+          this.connection();
+        }, 5000);
+      }
+    }
 
-      this.isAlive = false;
-      this.ws.ping();
-    },5000)
-
-    this.ws.on("close",()=>{
-      clearInterval(this.verification);
-    });
   }
 
-  heartbeat() {
-    this.isAlive = true;
-  }
-  
 
   toJSON() {
     return { "login": this.login, "name": this.name, "key": this.key, "spectate":this.spectate };
@@ -132,27 +128,25 @@ class SessionClients {
   }
 
   public toJSON() {
-    let ret = new Array();
+    let ret : {[i: string]:any} = {};
     let i = 0;
     this.clients.forEach((item) => {
       if(!item.spectate){
-        ret.push(item.toJSON());
+        ret[i]=(item.toJSON());
       }
       i++;
     });
 
-    return JSON.stringify(ret);
+    return ret;
   }
 
   
   public toArray() {
     let ret = new Array();
-    let i = 0;
     this.clients.forEach((item) => {
       if(!item.spectate){
         ret.push(item.toJSON());
       }
-      i++;
     });
 
     return ret;

@@ -79,6 +79,17 @@ export class DelpSessions {
   }
 
   public toJSON() {
+    let ret : {[i: string]:any} = {};
+    let i = 0;
+    this.sessions.forEach((item) => {
+      ret[i]=(item.toJSON());
+      i++;
+    });
+
+    return ret;
+  }
+
+  public toArray() {
     let ret = new Array();
     this.sessions.forEach((item) => {
       ret.push(item.toJSON());
@@ -86,6 +97,7 @@ export class DelpSessions {
 
     return ret;
   }
+
 
   public addSession(new_session: DelpSession, key: string) {
     this.sessions.set(key, new_session);
@@ -96,6 +108,7 @@ export class DelpSessions {
   }
 
   public removeSession(key: string) {
+    logger.error(`removeSession:${key}`);
     return this.sessions.delete(key)
   }
 
@@ -308,6 +321,8 @@ export class DelpSessions {
   }
 
   private returnSessions(cli: Client) {
+    logger.info(`returnSessions : ${JSON.stringify(cli.toJSON())}`);
+    logger.info(`returnSessions : ${JSON.stringify(DelpSessions.getInstance().getSession(cli.key)?.toJSON())}`);
     const note = new NotificationSession(
       cli,
       new Note(
@@ -324,6 +339,7 @@ export class DelpSessions {
   }
 
   private returnClients(cli: Client) {
+    logger.info(`returnClients : ${JSON.stringify(cli.toJSON())}`);
     const note = new NotificationSession(
       cli,
       new Note(

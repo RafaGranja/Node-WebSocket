@@ -5,6 +5,7 @@ const clients_1 = require("../Client/clients");
 const consts_1 = require("../Consts/consts");
 const notification_1 = require("../Notification/notification");
 const notificationService_1 = require("../Notification/notificationService");
+const controlSessions_1 = require("./controlSessions");
 class DelpSession {
     notifyAll(sender, note) {
         this.clients.getAllClients().forEach(function (cli) {
@@ -44,12 +45,12 @@ class DelpSession {
         });
     }
     toJSON() {
-        return { key: this.key, creator: this.creator.login, state: this.state };
+        let ret = { "key": this.key, "creator": this.creator.login, "state": this.state };
+        return ret;
     }
     constructor(key, cli) {
         this.key = key;
         this.clients = new clients_1.SessionClients();
-        this.clients.addClient(cli.ws, cli);
         this.opentime = new Date();
         if (cli.spectate) {
             this.creator = clients_1.DefaultClient;
@@ -58,6 +59,8 @@ class DelpSession {
             this.creator = cli;
         }
         this.state = consts_1.SESSION.OPEN;
+        controlSessions_1.DelpSessions.getInstance().addSession(this, this.key);
+        controlSessions_1.DelpSessions.getInstance().addClient(cli);
     }
     addClient(cli) {
         this.clients.addClient(cli.ws, cli);

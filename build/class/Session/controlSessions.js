@@ -55,6 +55,15 @@ class DelpSessions {
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     toJSON() {
+        let ret = {};
+        let i = 0;
+        this.sessions.forEach((item) => {
+            ret[i] = (item.toJSON());
+            i++;
+        });
+        return ret;
+    }
+    toArray() {
         let ret = new Array();
         this.sessions.forEach((item) => {
             ret.push(item.toJSON());
@@ -68,6 +77,7 @@ class DelpSessions {
         return this.sessions.get(key);
     }
     removeSession(key) {
+        log_1.logger.error(`removeSession:${key}`);
         return this.sessions.delete(key);
     }
     getSessions() {
@@ -265,15 +275,18 @@ class DelpSessions {
         (_a = this.getSession(sender.key)) === null || _a === void 0 ? void 0 : _a.deleteClients();
     }
     returnSessions(cli) {
-        var _a;
+        var _a, _b;
+        log_1.logger.info(`returnSessions : ${JSON.stringify(cli.toJSON())}`);
+        log_1.logger.info(`returnSessions : ${JSON.stringify((_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.toJSON())}`);
         const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
             "action": "returnSessions",
-            "content": (_a = DelpSessions.getInstance().getSession(cli.key)) === null || _a === void 0 ? void 0 : _a.toJSON(),
+            "content": (_b = DelpSessions.getInstance().getSession(cli.key)) === null || _b === void 0 ? void 0 : _b.toJSON(),
         }, "Sucesso"));
         notificationService_1.NotificationService.getInstance().addNotification(note);
     }
     returnClients(cli) {
         var _a;
+        log_1.logger.info(`returnClients : ${JSON.stringify(cli.toJSON())}`);
         const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
             "action": "returnClients",
             "content": (_a = DelpSessions.getInstance()

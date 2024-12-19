@@ -104,7 +104,7 @@ function onConnection(ws, req) {
 function returnSessions(cli) {
     const note = new notification_1.NotificationSession(cli, new notification_1.Note(consts_1.STATUS.OK, consts_1.TYPE.OK, {
         "action": "returnSessions",
-        "content": controlSessions_1.DelpSessions.getInstance().toJSON(),
+        "content": controlSessions_1.DelpSessions.getInstance().toArray(),
     }, "Sucesso"));
     notificationService_1.NotificationService.getInstance().addNotification(note);
 }

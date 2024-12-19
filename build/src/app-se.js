@@ -31,8 +31,6 @@ function initSession(key, cli) {
         }
         else {
             const new_session = new session_1.DelpSession(key, cli);
-            controlSessions_1.DelpSessions.getInstance().addSession(new_session, key);
-            controlSessions_1.DelpSessions.getInstance().addClient(cli);
         }
     }
     return true;

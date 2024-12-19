@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Note = exports.NotificationError = exports.NotificationSession = void 0;
+const log_1 = require("../../src/log");
 const clients_1 = require("../Client/clients");
 const consts_1 = require("../Consts/consts");
 class Note {
@@ -17,6 +18,11 @@ class Note {
 exports.Note = Note;
 class NotificationSession {
     send() {
+        log_1.logger.info(`onSend : ${JSON.stringify({
+            status: this.status,
+            body: this.note.toJSON(),
+            sender: this.sender,
+        })}`);
         this.destiny.ws.send(JSON.stringify({
             status: this.status,
             body: this.note.toJSON(),

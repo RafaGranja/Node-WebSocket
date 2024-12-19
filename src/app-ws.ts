@@ -132,7 +132,7 @@ function returnSessions(cli: Client) {
       TYPE.OK,
       {
         "action": "returnSessions",
-        "content": DelpSessions.getInstance().toJSON(),
+        "content": DelpSessions.getInstance().toArray(),
       },
       "Sucesso"
     )

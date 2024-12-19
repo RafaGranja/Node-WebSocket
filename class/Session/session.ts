@@ -57,13 +57,13 @@ export class DelpSession {
   }
 
   public toJSON() {
-    return { key: this.key, creator: this.creator.login, state: this.state };
+    let ret = { "key": this.key, "creator": this.creator.login, "state": this.state };
+    return ret;
   }
 
   constructor(key: string, cli: Client) {
     this.key = key;
     this.clients = new SessionClients();
-    this.clients.addClient(cli.ws, cli);
     this.opentime = new Date();
     if(cli.spectate){
       this.creator= DefaultClient
@@ -72,6 +72,8 @@ export class DelpSession {
       this.creator = cli;
     }
     this.state = SESSION.OPEN;
+    DelpSessions.getInstance().addSession(this, this.key);
+    DelpSessions.getInstance().addClient(cli);
   }
 
   public addClient(cli: Client) {

@@ -30,8 +30,6 @@ function initSession(key: string, cli?: Client): Boolean {
       }
     } else {
       const new_session: DelpSession = new DelpSession(key, cli);
-      DelpSessions.getInstance().addSession(new_session, key);
-      DelpSessions.getInstance().addClient(cli);
     }
   }
 
