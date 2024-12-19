@@ -45,7 +45,19 @@ class Client {
 
       }
       else{
-        this.ws.send(JSON.stringify({ "action": "ping", "content": "", "client" : this.toJSON() }))
+        const note = new NotificationSession(
+          this,
+          new Note(
+            STATUS.WAIT,
+            TYPE.INFO,
+           {
+              "action": "ping",
+              "content": "Verificando conexão",
+            },
+            "Verificação"
+          )
+        );
+        NotificationService.getInstance().addNotification(note);
         setTimeout(()=>{
           this.connection();
         }, 5000);
