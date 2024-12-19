@@ -45,7 +45,7 @@ class Client {
 
       }
       else{
-        this.ws.send('')
+        this.ws.send(JSON.stringify({ "action": "ping", "content": "", "client" : this.toJSON() }))
         setTimeout(()=>{
           this.connection();
         }, 5000);
