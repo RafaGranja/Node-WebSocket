@@ -4,6 +4,7 @@ exports.DefaultClient = exports.Client = exports.Clients = exports.SessionClient
 const log_1 = require("../../src/log");
 const consts_1 = require("../Consts/consts");
 const notification_1 = require("../Notification/notification");
+const notificationService_1 = require("../Notification/notificationService");
 const controlSessions_1 = require("../Session/controlSessions");
 class Client {
     constructor(ws = null, login = "Servidor", name = "Delp", key = "", spectate = "false") {
@@ -26,7 +27,11 @@ class Client {
                 Clients.getInstance().removeClient(this);
             }
             else {
-                this.ws.send('');
+                const note = new notification_1.NotificationSession(this, new notification_1.Note(consts_1.STATUS.WAIT, consts_1.TYPE.INFO, {
+                    "action": "ping",
+                    "content": "Verificando conexão",
+                }, "Verificação"));
+                notificationService_1.NotificationService.getInstance().addNotification(note);
                 setTimeout(() => {
                     this.connection();
                 }, 5000);
